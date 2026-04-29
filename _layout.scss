@@ -1,0 +1,39 @@
+// ==========================================================================
+// understory-styling — Grove Layout Values
+// ==========================================================================
+//
+// Mirrors of Grove's hard-coded layout values (breakpoints, and any future
+// container widths or fixed dimensions worth abstracting). Themes consume
+// these so a single Grove change propagates everywhere.
+//
+// Values stay as raw Sass, NOT CSS custom properties — `@media (min-width:
+// var(--bp-md))` does not work; custom properties don't resolve inside
+// media query conditions.
+//
+// Usage:
+//   @use 'pkg:@5mts/understory-styling' as *;
+//
+//   $bp-md: grove-bp('md');
+//
+//   @media (min-width: grove-bp('lg')) { ... }
+
+@use 'sass:map';
+
+// Grove only emits two breakpoints right now (md / lg). Themes can add
+// their own (sm, xl, etc.) in their own token files — those aren't
+// Grove-controlled and don't belong here.
+$grove-breakpoints-base: (
+  md: 768px,
+  lg: 1240px,
+) !default;
+
+$grove-breakpoints-extensions: () !default;
+$grove-breakpoints: map.merge($grove-breakpoints-base, $grove-breakpoints-extensions);
+
+@function grove-bp($key) {
+  $value: map.get($grove-breakpoints, $key);
+  @if $value == null {
+    @error "No Grove breakpoint found for key: '#{$key}'. Check $grove-breakpoints-base or add it via $grove-breakpoints-extensions.";
+  }
+  @return $value;
+}

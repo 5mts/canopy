@@ -37,6 +37,8 @@
 // --------------------------------------------------------------------------
 
 @use 'sass:map';
+@use 'sass:list';
+@use 'sass:string';
 
 // The root scope prepended to every Grove selector. Override via `with` at
 // @use time if your site needs a different root (e.g. 'body.theme-v2').
@@ -59,13 +61,29 @@ $grove-selectors-base: (
   // Page regions
   page-above:    '.Page-above',
 
+  // News tile
+  news-tile:     'ps-promo[data-content-type="news-story"]',
+
+  // Eyebrow — Grove emits `<div class="…-category"><a>…</a></div>` above
+  // promo titles to label the category. The `:has(> a)` filter excludes
+  // similarly-named utility classes that don't wrap a link.
+  eyebrow:       '[class$="-category"]:has(> a), [class$="-breadcrumbs"]:has(a)',
+  byline:        '[class$="-authorName"]',
+  timestamp:     '[class$="-timestamp"], [class$="-timestamp"] > *',
+
+  // Action bar — share/social/save links rendered as a row of icon buttons
+  action-bar:      '.ActionBar',
+  action-bar-item: '.ActionBar-items-item',
+  action-link:     '.ActionLink',
+  social-action:   '.ActionLink[data-social-service]',
+
   // Navigation
   nav-bar:           '.PH-nav-bar',
   nav-item:          '.NavI',
   nav-item-list:     '.NavI-items',
   nav-item-text:     '.NavI-text',
   nav-link:          '.NavLink',
-  dropdown-nav-items: '.DropdownNavigation-items',
+  dropdown-nav-items: '.DropdownNavigation-items, .NavI .NavLink',
 
   // Reserved: 'none' is a no-op anchor for rules scoped only to the body
   none:          '',
@@ -99,4 +117,24 @@ $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
   #{$general-scope}#{$body-modifier} #{grove($key)} {
     @content;
   }
+}
+
+// Some Grove components emit per-variant class names that differ only by a
+// single uppercase letter — e.g. `.PromoA-title`, `.PromoB-title`, … or
+// `.ListA-items`, `.ListB-items`, …. The variant letter is meaningless to
+// us; we want every variant styled the same.
+//
+// `grove-variants` returns a comma-separated selector list covering every
+// letter in `$letters`, so callers can interpolate it into a rule once.
+//
+// Usage:
+//   #{grove-variants('Promo', '-title', a b c d e)} { margin-top: 0; }
+//   → .PromoA-title, .PromoB-title, .PromoC-title, .PromoD-title, .PromoE-title
+@function grove-variants($prefix, $suffix, $letters) {
+  $result: ();
+  @each $letter in $letters {
+    $class: '.' + $prefix + string.to-upper-case($letter) + $suffix;
+    $result: list.append($result, $class, comma);
+  }
+  @return $result;
 }

@@ -4,8 +4,8 @@
 //
 // This file maps raw Grove selectors (brittle class names controlled by the
 // Grove vendor) to semantic keys (stable names your theme code uses). When
-// the Grove renames a class, you update ONE entry here and every theme that
-// depends on this package gets the fix on the next install.
+// the Grove vendor renames a class, you update ONE entry here and every
+// theme that depends on this package gets the fix on the next install.
 //
 // --------------------------------------------------------------------------
 // HOW TO CONSUME (from a theme repo)
@@ -18,10 +18,17 @@
 //     background: var(--color-surface);
 //   }
 //
-// Override the default body scope:
-//   @use 'pkg:@5mts/understory-styling' with (
-//     $general-scope: 'body.theme-v2'
-//   ) as *;
+// Scope is the consumer's job. The mixin emits exactly the selector(s) the
+// map specifies — nothing more. Wrap with normal Sass nesting when you need
+// a specific ancestor:
+//
+//   body.has-player {
+//     @include grove-selector('audio-player') { … }
+//   }
+//
+//   html.ArtP {
+//     @include grove-selector('main-content') { … }
+//   }
 //
 // Add per-site selectors that aren't in the shared map:
 //   @use 'pkg:@5mts/understory-styling' with (
@@ -40,16 +47,12 @@
 @use 'sass:list';
 @use 'sass:string';
 
-// The root scope prepended to every Grove selector. Override via `with` at
-// @use time if your site needs a different root (e.g. 'body.theme-v2').
-$general-scope: 'body' !default;
-
 // Per-site selectors. Empty by default — sites pass their own map via
 // `with ($grove-selectors-extensions: (...))`.
 $grove-selectors-extensions: () !default;
 
 // Canonical selectors shipped with the package. Update these when the Grove
-// changes a class name and bump the package version.
+// vendor changes a class name and bump the package version.
 $grove-selectors-base: (
   // Layout containers
   region-main:  'main',
@@ -62,16 +65,24 @@ $grove-selectors-base: (
   audio-player:  '.PH-persistent-player',
   promo-audio-label: '.PromoAE-audio-label',
 
-  episode-list:     '.EplB, .EplA',
+  episode-list:        '.EplB, .EplA',
   episode-list-header: '.EplB-header, EplA-header',
-  episode-list-title: '.EplB-header-title, EplA-header-title',
-  episode-list-item: '.EplB-items-item, EplA-items-item',
+  episode-list-title:  '.EplB-header-title, EplA-header-title',
+  episode-list-item:   '.EplB-items-item, EplA-items-item',
 
   // Typography
-  promo-titles:  '.PromoXS-title',
+  promo-titles:   '.PromoXS-title',
 
   // Page regions
-  page-above:    '.Page-above',
+  page-above:     '.Page-above',
+  main-content:   '[class$="-mainContent"]',
+  main-headline:   'h1',
+  page-lead:      'main [class$="-lead"]',
+  breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
+
+  // content types
+  news-story:     '.ArtP:not(.aside)',
+
 
   // News tile
   news-tile:     'ps-promo[data-content-type="news-story"]',
@@ -108,13 +119,10 @@ $grove-selectors-base: (
   nav-link:          '.NavLink',
   dropdown-nav-items: '.DropdownNavigation-items, .NavI .NavLink',
 
-  // streaming/players
-  stream-container:  'ps-stream',
-  stream-pill:       '.StreamPill',
+  // Streaming / players
+  stream-container:        'ps-stream',
+  stream-pill:             '.StreamPill',
   stream-pill-highlighted: '.StreamPill:hover, [playing] .StreamPill',
-
-  // Reserved: 'none' is a no-op anchor for rules scoped only to the body
-  none:          '',
 );
 
 $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
@@ -130,26 +138,25 @@ $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
 }
 
 // Apply styles to one or more Grove elements by their semantic keys.
-// Pass a single key string or a list of keys. Automatically scopes each
-// selector under $general-scope.
+// Pass a single key string or a list of keys. The mixin emits exactly the
+// mapped selector(s) — no implicit scope. Wrap with Sass nesting if you
+// need a specific ancestor.
 //
 // Usage:
-//   @include grove-selector('promo') { ... }
-//   → body .ps-promo { ... }
+//   @include grove-selector('promo') { … }
+//   → ps-promo[…] { … }
 //
-//   @include grove-selector(('news-tile', 'tabs')) { ... }
-//   → body ps-promo[…], body ps-tabs { ... }
+//   @include grove-selector(('news-tile', 'tabs')) { … }
+//   → ps-promo[…], ps-tabs { … }
 //
-// With a body-class modifier (applies only when body has that class):
-//   @include grove-selector('audio-player', '.has-player') { ... }
-//   → body.has-player .PH-persistent-player { ... }
-//
-// $body-modifier can chain multiple classes: '.has-player.is-playing'
-@mixin grove-selector($keys, $body-modifier: '') {
+//   body.has-player {
+//     @include grove-selector('audio-player') { … }
+//   }
+//   → body.has-player .PH-persistent-player { … }
+@mixin grove-selector($keys) {
   $selector-list: ();
   @each $key in $keys {
-    $scoped: $general-scope + $body-modifier + ' ' + grove($key);
-    $selector-list: list.append($selector-list, $scoped, comma);
+    $selector-list: list.append($selector-list, grove($key), comma);
   }
   #{$selector-list} {
     @content;
@@ -175,3 +182,9 @@ $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
   }
   @return $result;
 }
+
+
+// Content types and header elements
+$grove-content-types: 'ArtP', 'RSEP' !default;
+$grove-news-story-type: 'ArtP';
+$grove-head-suffixes: '-breadcrumbs-wrapper', '-headline', '-contentInfo', '-audioPlayer', 'parentInfo' !default;

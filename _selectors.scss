@@ -55,7 +55,10 @@ $grove-selectors-base: (
   region-main:  'main',
 
   // Content components
-  promo:         'ps-promo',
+  // Excludes promos nested inside other ps-* containers where the base
+  // styling shouldn't apply. Add more ancestors to the :where() list as
+  // they're identified.
+  promo:         'ps-promo:not(:where(ps-tabs) ps-promo)',
   audio-player:  '.PH-persistent-player',
 
   // Page regions
@@ -70,6 +73,14 @@ $grove-selectors-base: (
   eyebrow:       '[class$="-category"]:has(> a), [class$="-breadcrumbs"]:has(a)',
   byline:        '[class$="-authorName"]',
   timestamp:     '[class$="-timestamp"], [class$="-timestamp"] > *',
+
+  // Tabs — Grove emits a `<ps-tabs>` element wrapping a `.Tabs-tabs` list of
+  // tab buttons. Active state is signalled via `[data-active="true"]`, with
+  // a `.Tabs-tabs-tab` class as an alternative hook some Grove variants use.
+  tabs:          'ps-tabs',
+  tabs-list:     '.Tabs-tabs',
+  tab:           'ps-tabs [role="tab"]',
+  tab-active:    'ps-tabs [role="tab"][data-active="true"], ps-tabs .Tabs-tabs-tab[data-active="true"]',
 
   // Action bar — share/social/save links rendered as a row of icon buttons
   action-bar:      '.ActionBar',

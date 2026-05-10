@@ -61,7 +61,10 @@ $grove-selectors-base: (
   promo:         'ps-promo:not(:where(ps-tabs,.EplB) ps-promo)',
   audio-player:  '.PH-persistent-player',
 
-  episode-list:     '.EplB',
+  episode-list:     '.EplB, .EplA',
+  episode-list-header: '.EplB-header, EplA-header',
+  episode-list-title: '.EplB-header-title, EplA-header-title',
+  episode-list-item: '.EplB-items-item, EplA-items-item',
 
   // Typography
   promo-titles:  '.PromoXS-title',

@@ -60,6 +60,7 @@ $grove-selectors-base: (
   // they're identified.
   promo:         'ps-promo:not(:where(ps-tabs,.EplB) ps-promo)',
   audio-player:  '.PH-persistent-player',
+  promo-audio-label: '.PromoAE-audio-label',
 
   episode-list:     '.EplB, .EplA',
   episode-list-header: '.EplB-header, EplA-header',
@@ -106,6 +107,11 @@ $grove-selectors-base: (
   nav-item-text:     '.NavI-text',
   nav-link:          '.NavLink',
   dropdown-nav-items: '.DropdownNavigation-items, .NavI .NavLink',
+
+  // streaming/players
+  stream-container:  'ps-stream',
+  stream-pill:       '.StreamPill',
+  stream-pill-highlighted: '.StreamPill:hover, [playing] .StreamPill',
 
   // Reserved: 'none' is a no-op anchor for rules scoped only to the body
   none:          '',
@@ -164,7 +170,7 @@ $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
 @function grove-variants($prefix, $suffix, $letters) {
   $result: ();
   @each $letter in $letters {
-    $class: '.' + $prefix + string.to-upper-case($letter) + $suffix;
+    $class: '.' + $prefix + $letter + $suffix;
     $result: list.append($result, $class, comma);
   }
   @return $result;

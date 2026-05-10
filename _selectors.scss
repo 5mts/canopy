@@ -58,8 +58,13 @@ $grove-selectors-base: (
   // Excludes promos nested inside other ps-* containers where the base
   // styling shouldn't apply. Add more ancestors to the :where() list as
   // they're identified.
-  promo:         'ps-promo:not(:where(ps-tabs) ps-promo)',
+  promo:         'ps-promo:not(:where(ps-tabs,.EplB) ps-promo)',
   audio-player:  '.PH-persistent-player',
+
+  episode-list:     '.EplB',
+
+  // Typography
+  promo-titles:  '.PromoXS-title',
 
   // Page regions
   page-above:    '.Page-above',
@@ -79,8 +84,11 @@ $grove-selectors-base: (
   // a `.Tabs-tabs-tab` class as an alternative hook some Grove variants use.
   tabs:          'ps-tabs',
   tabs-list:     '.Tabs-tabs',
-  tab:           'ps-tabs [role="tab"]',
+  tabs-header:   '.Tabs-header',
+  tab:           'ps-tabs .Tabs-tabs-tab',
   tab-active:    'ps-tabs [role="tab"][data-active="true"], ps-tabs .Tabs-tabs-tab[data-active="true"]',
+  tabs-title:    'ps-tabs .Tabs-header-title',
+  tabs-content:  'ps-tabs .Tabs-content',
 
   // Action bar — share/social/save links rendered as a row of icon buttons
   action-bar:      '.ActionBar',

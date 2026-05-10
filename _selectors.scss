@@ -112,20 +112,29 @@ $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
   @return $value;
 }
 
-// Apply styles to a Grove element by its semantic key. Automatically scopes
-// the selector under $general-scope.
+// Apply styles to one or more Grove elements by their semantic keys.
+// Pass a single key string or a list of keys. Automatically scopes each
+// selector under $general-scope.
 //
 // Usage:
 //   @include grove-selector('promo') { ... }
 //   → body .ps-promo { ... }
+//
+//   @include grove-selector(('news-tile', 'tabs')) { ... }
+//   → body ps-promo[…], body ps-tabs { ... }
 //
 // With a body-class modifier (applies only when body has that class):
 //   @include grove-selector('audio-player', '.has-player') { ... }
 //   → body.has-player .PH-persistent-player { ... }
 //
 // $body-modifier can chain multiple classes: '.has-player.is-playing'
-@mixin grove-selector($key, $body-modifier: '') {
-  #{$general-scope}#{$body-modifier} #{grove($key)} {
+@mixin grove-selector($keys, $body-modifier: '') {
+  $selector-list: ();
+  @each $key in $keys {
+    $scoped: $general-scope + $body-modifier + ' ' + grove($key);
+    $selector-list: list.append($selector-list, $scoped, comma);
+  }
+  #{$selector-list} {
     @content;
   }
 }

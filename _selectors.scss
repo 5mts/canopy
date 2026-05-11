@@ -77,14 +77,16 @@ $grove-selectors-base: (
   page-above:     '.Page-above',
   main-content:   '[class$="-mainContent"]',
   main-headline:   'h1',
+  byline:          '[class$="-byline"]',
+  header-metadata:  '[class$="-contentInfo"]',
   page-lead:      'main [class$="-lead"]',
   breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
 
   content-image:   'figure .Image',
   content-figure-content: '.Figure-content',
-  content-figure-caption: '.Figure-caption',
+  content-figure-caption: '.Figure-caption, .CarouselSlide-infoDescription',
   content-figure-credit-container: '.Figure-credit-container',
-  content-figure-credit: '.Figure-credit',
+  content-figure-credit: '.Figure-credit, .CarouselSlide-infoAttribution',
 
   // content types
   news-story:     '.ArtP:not(.aside)',
@@ -97,7 +99,7 @@ $grove-selectors-base: (
   // promo titles to label the category. The `:has(> a)` filter excludes
   // similarly-named utility classes that don't wrap a link.
   eyebrow:       '[class$="-category"]:has(> a), [class$="-breadcrumbs"]:has(a)',
-  byline:        '[class$="-authorName"]',
+  author-info:        '[class$="-authorName"]',
   timestamp:     '[class$="-timestamp"], [class$="-timestamp"] > *',
 
   // Tabs — Grove emits a `<ps-tabs>` element wrapping a `.Tabs-tabs` list of

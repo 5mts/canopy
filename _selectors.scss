@@ -80,6 +80,12 @@ $grove-selectors-base: (
   page-lead:      'main [class$="-lead"]',
   breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
 
+  content-image:   'figure .Image',
+  content-figure-content: '.Figure-content',
+  content-figure-caption: '.Figure-caption',
+  content-figure-credit-container: '.Figure-credit-container',
+  content-figure-credit: '.Figure-credit',
+
   // content types
   news-story:     '.ArtP:not(.aside)',
 

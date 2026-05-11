@@ -62,6 +62,8 @@ $grove-selectors-base: (
   // styling shouldn't apply. Add more ancestors to the :where() list as
   // they're identified.
   promo:         'ps-promo:not(:where(ps-tabs,.EplB) ps-promo)',
+  promo-media:    '[class^="Promo"][class$="-media"]',
+  promo-content:    '[class^="Promo"][class$="-content"]',
   audio-player:  '.PH-persistent-player',
   promo-audio-label: '.PromoAE-audio-label',
 
@@ -82,7 +84,7 @@ $grove-selectors-base: (
   page-lead:      'main [class$="-lead"]',
   breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
 
-  content-image:   'figure .Image',
+  content-image:   'figure .Image, .PromoXS-media .Image',
   content-figure-content: '.Figure-content',
   content-figure-caption: '.Figure-caption, .CarouselSlide-infoDescription',
   content-figure-credit-container: '.Figure-credit-container',

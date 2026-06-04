@@ -77,12 +77,22 @@ $grove-selectors-base: (
 
   // Page regions
   page-above:     '.Page-above',
+  sidebar:        'main > aside',
   main-content:   '[class$="-mainContent"]',
   main-headline:   'h1',
   byline:          '[class$="-byline"]',
   header-metadata:  '[class$="-contentInfo"]',
   page-lead:      'main [class$="-lead"]',
   breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
+
+  // Sidebar slot — destination for JS-relocated content (e.g. metadata links).
+  // First-pass selector covering known Grove side-region variants; refine after
+  // inspecting the real DOM on the first integration run.
+  article-sidebar: '[class$="-sidebar"], [class$="-aside"]',
+
+  // Metadata links eligible for relocation into the sidebar by JS. First-pass
+  // selector; narrow if Grove emits unrelated links in this region.
+  metadata-relocatable-links: '[class$="-contentInfo"] a',
 
   content-image:   'figure .Image, .PromoXS-media .Image',
   content-figure-content: '.Figure-content',
@@ -93,6 +103,8 @@ $grove-selectors-base: (
   // content types
   news-story:     '.ArtP:not(.aside)',
 
+  // podcast
+  podcast-subscribe-container: '.PodcastPage-share',
 
   // News tile
   news-tile:     'ps-promo[data-content-type="news-story"]',

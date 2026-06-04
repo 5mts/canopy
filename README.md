@@ -88,11 +88,44 @@ Extensions override base entries on key collision — useful when a site runs a 
 | `grove($key)` | function | Look up a raw selector by semantic key |
 | `grove-selector($key, $body-modifier: '')` | mixin | Apply styles to the selector, auto-scoped |
 
+## JavaScript usage
+
+The same surface area is exposed as a generated ES module so JS and CSS reference one source of truth:
+
+```js
+import { grove, groveAll, groveOne, groveVariants } from '@5mts/understory-styling/selectors.js';
+
+document.querySelectorAll(grove('audio-player'));
+groveAll(['promo', 'news-tile']).forEach(el => { /* … */ });
+```
+
+Exports:
+
+| Name | Shape | SCSS counterpart |
+|---|---|---|
+| `groveSelectors` | frozen object | `$grove-selectors-base` |
+| `groveContentTypes` | frozen string array | `$grove-content-types` |
+| `groveNewsStoryType` | string | `$grove-news-story-type` |
+| `groveHeadSuffixes` | frozen string array | `$grove-head-suffixes` |
+| `grove(key)` | function | `grove($key)` Sass function |
+| `groveAll(keys, root?)` | function (returns Array) | `grove-selector($keys)` mixin |
+| `groveOne(key, root?)` | function (returns Element) | single-key form |
+| `groveVariants(prefix, suffix, letters)` | function (returns string array) | `grove-variants(...)` Sass function |
+| `isNewsStory(el)` | function (returns boolean) | content-type check |
+
+`selectors.js` is generated from `_selectors.scss` — never edit it directly. After editing the SCSS map, run:
+
+```bash
+npm run build:selectors
+```
+
+`prepublishOnly` regenerates automatically before publish, so the npm tarball always reflects the SCSS source.
+
 ## Versioning
 
 - **Patch** (0.x.Y): internal refactor, documentation, no selector changes
-- **Minor** (0.X.y): new semantic keys added (backward compatible)
-- **Major** (X.y.z): existing keys renamed or removed, or selectors changed in ways that may alter theme output
+- **Minor** (0.X.y): new semantic keys added (backward compatible) — applies to SCSS map and generated `selectors.js` together
+- **Major** (X.y.z): existing keys renamed or removed, or selectors changed in ways that may alter theme output — applies to both layers together
 
 Consumers pin to a minor range (`^0.1.0`) to get additions and fixes automatically, and review before accepting a major bump.
 

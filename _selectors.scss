@@ -104,6 +104,10 @@ $grove-selectors-base: (
   news-story:     '.ArtP:not(.aside)',
 
   // podcast
+  podcast-aside: '.PodcastPage-aside-content',
+  podcast-cover-and-title: '.PodcastPage-top',
+  podcast-byline: '.PodcastPage-byline',
+  podcast-credits: '.PodcastPage-aside-content .ListPeople',
   podcast-subscribe-container: '.PodcastPage-share',
 
   // News tile

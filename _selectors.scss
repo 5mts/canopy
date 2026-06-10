@@ -57,6 +57,9 @@ $grove-selectors-base: (
   // Layout containers
   region-main:  'main',
 
+  // page types 
+  page-type-podcast: '.PodcastPage',
+
   // Content components
   // Excludes promos nested inside other ps-* containers where the base
   // styling shouldn't apply. Add more ancestors to the :where() list as
@@ -112,6 +115,12 @@ $grove-selectors-base: (
   podcast-description: '.PodcastPage-byline + *',
   podcast-credits: '.ListPeople',
   podcast-subscribe: '.PodcastPage-share',
+  podcast-subscribe-label: '.PodcastLink-provider',
+  podcast-link-inner: '.PodcastLink',
+  podcast-social-bar: '.PodcastPage-social',
+
+  // social links
+  social-bar: '.SocialBar',
 
   // News tile
   news-tile:     'ps-promo[data-content-type="news-story"]',

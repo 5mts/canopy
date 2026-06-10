@@ -84,6 +84,7 @@ $grove-selectors-base: (
   header-metadata:  '[class$="-contentInfo"]',
   page-lead:      'main [class$="-lead"]',
   breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
+  people-list:    '.ListPeople',
 
   // Sidebar slot — destination for JS-relocated content (e.g. metadata links).
   // First-pass selector covering known Grove side-region variants; refine after
@@ -106,9 +107,11 @@ $grove-selectors-base: (
   // podcast
   podcast-aside: '.PodcastPage-aside-content',
   podcast-cover-and-title: '.PodcastPage-top',
+  podcast-title: '.PodcastPage-headline',
   podcast-byline: '.PodcastPage-byline',
-  podcast-credits: '.PodcastPage-aside-content .ListPeople',
-  podcast-subscribe-container: '.PodcastPage-share',
+  podcast-description: '.PodcastPage-byline + *',
+  podcast-credits: '.ListPeople',
+  podcast-subscribe: '.PodcastPage-share',
 
   // News tile
   news-tile:     'ps-promo[data-content-type="news-story"]',

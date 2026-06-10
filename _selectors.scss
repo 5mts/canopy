@@ -109,6 +109,7 @@ $grove-selectors-base: (
 
   // podcast
   podcast-aside: '.PodcastPage-aside-content',
+  podcast-primary: '.PodcastPage-wrapper',
   podcast-cover-and-title: '.PodcastPage-top',
   podcast-title: '.PodcastPage-headline',
   podcast-byline: '.PodcastPage-byline',
@@ -118,6 +119,7 @@ $grove-selectors-base: (
   podcast-subscribe-label: '.PodcastLink-provider',
   podcast-link-inner: '.PodcastLink',
   podcast-social-bar: '.PodcastPage-social',
+  podcast-cover-art: '.PodcastPage-cover-art',
 
   // social links
   social-bar: '.SocialBar',
@@ -226,3 +228,22 @@ $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
 $grove-content-types: 'ArtP', 'RSEP' !default;
 $grove-news-story-type: 'ArtP';
 $grove-head-suffixes: '-breadcrumbs-wrapper', '-headline', '-contentInfo', '-audioPlayer', 'parentInfo' !default;
+
+// List components — Grove emits per-variant list wrappers (`.ListA`, `.ListB`,
+// …, `.ListH`) whose child classes differ only by the variant letter. The
+// letter is meaningless to us; we style every variant the same. Add letters
+// here if Grove introduces more variants — one edit, every theme.
+$grove-list-prefix:  'List' !default;
+$grove-list-letters: A B C D E F G H !default;
+
+// Promote the common list sub-elements to named selector keys, so themes can
+// target the whole `ListA…ListH` set with a single `grove-selector('list-header')`
+// call instead of repeating the grove-variants() expansion at every call site.
+// Merged in here (after grove-variants is defined) rather than written into
+// $grove-selectors-base, so the letter set stays single-sourced in
+// $grove-list-letters and these style-only hooks don't emit JS entries in
+// selectors.js.
+$grove-selectors: map.merge($grove-selectors, (
+  list-header:       grove-variants($grove-list-prefix, '-header', $grove-list-letters),
+  list-header-title: grove-variants($grove-list-prefix, '-header-title', $grove-list-letters),
+));

@@ -77,6 +77,7 @@ $grove-selectors-base: (
 
   // Typography
   promo-titles:   '.PromoXS-title',
+  section-head:  "[id^='section-head']",
 
   // Page regions
   page-above:     '.Page-above',
@@ -88,6 +89,7 @@ $grove-selectors-base: (
   page-lead:      'main [class$="-lead"]',
   breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
   people-list:    '.ListPeople',
+  people-list-item: '.ListPeople-items-item',
 
   // Sidebar slot — destination for JS-relocated content (e.g. metadata links).
   // First-pass selector covering known Grove side-region variants; refine after
@@ -115,11 +117,14 @@ $grove-selectors-base: (
   podcast-byline: '.PodcastPage-byline',
   podcast-description: '.PodcastPage-byline + *',
   podcast-credits: '.ListPeople',
+  podcast-credits-title: '.ListPeople-header-title',
   podcast-subscribe: '.PodcastPage-share',
   podcast-subscribe-label: '.PodcastLink-provider',
   podcast-link-inner: '.PodcastLink',
   podcast-social-bar: '.PodcastPage-social',
   podcast-cover-art: '.PodcastPage-cover-art',
+  podcast-icon-headings: '.PodcastActionBar-heading, .PodcastPage-social .SocialBar-heading',
+  podcast-hostname: ' .PodcastPage-hostName',
 
   // social links
   social-bar: '.SocialBar',
@@ -131,7 +136,7 @@ $grove-selectors-base: (
   // promo titles to label the category. The `:has(> a)` filter excludes
   // similarly-named utility classes that don't wrap a link.
   eyebrow:       '[class$="-category"]:has(> a), [class$="-breadcrumbs"]:has(a)',
-  author-info:        '[class$="-authorName"]',
+  author-info:   '[class$="-authorName"]',
   timestamp:     '[class$="-timestamp"], [class$="-timestamp"] > *',
 
   // Tabs — Grove emits a `<ps-tabs>` element wrapping a `.Tabs-tabs` list of

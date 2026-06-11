@@ -59,6 +59,7 @@ $grove-selectors-base: (
 
   // page types 
   page-type-podcast: '.PodcastPage',
+  page-type-podcast-episode: '.PCEP',
 
   // Content components
   // Excludes promos nested inside other ps-* containers where the base
@@ -91,6 +92,9 @@ $grove-selectors-base: (
   people-list:    '.ListPeople',
   people-list-item: '.ListPeople-items-item',
 
+  // modules
+  rich-text: '.RichTextModule',
+
   // Sidebar slot — destination for JS-relocated content (e.g. metadata links).
   // First-pass selector covering known Grove side-region variants; refine after
   // inspecting the real DOM on the first integration run.
@@ -110,21 +114,23 @@ $grove-selectors-base: (
   news-story:     '.ArtP:not(.aside)',
 
   // podcast
-  podcast-aside: '.PodcastPage-aside-content',
-  podcast-primary: '.PodcastPage-wrapper',
+  podcast-container: '.PodcastPage-main, .PCEP-wrapper',
+  podcast-aside: '.PodcastPage-aside, .PCEP-aside',
+  podcast-primary: '.PodcastPage-wrapper, .PCEP-main',
   podcast-cover-and-title: '.PodcastPage-top',
   podcast-title: '.PodcastPage-headline',
   podcast-byline: '.PodcastPage-byline',
   podcast-description: '.PodcastPage-byline + *',
   podcast-credits: '.ListPeople',
   podcast-credits-title: '.ListPeople-header-title',
-  podcast-subscribe: '.PodcastPage-share',
+  podcast-subscribe: '.PodcastActionBar',
   podcast-subscribe-label: '.PodcastLink-provider',
   podcast-link-inner: '.PodcastLink',
   podcast-social-bar: '.PodcastPage-social',
   podcast-cover-art: '.PodcastPage-cover-art',
   podcast-icon-headings: '.PodcastActionBar-heading, .PodcastPage-social .SocialBar-heading',
   podcast-hostname: ' .PodcastPage-hostName',
+  episode-series-header: '.PCEP-parentInfo',
 
   // social links
   social-bar: '.SocialBar',

@@ -121,6 +121,29 @@ npm run build:selectors
 
 `prepublishOnly` regenerates automatically before publish, so the npm tarball always reflects the SCSS source.
 
+## Grove readiness — `ready.js`
+
+On Grove, `DOMContentLoaded` is not enough: custom elements mount *after* it fires, and the CMS navigates client-side without firing it again. `ready.js` is Grove's version of that signal — it runs your code once the DOM is ready and **again on every render and every client-side navigation** (bfcache restore + history `popstate`). Because it re-fires, your callback must be idempotent.
+
+```js
+import { onGroveRender, onGroveElement } from '@5mts/understory-styling/ready.js';
+import { grove } from '@5mts/understory-styling/selectors.js';
+
+// Runs on ready, then on every render/navigation — reconcile, don't assume once.
+onGroveRender(() => { /* make the DOM match what you want, idempotently */ });
+
+// Convenience: fire once per matching element as it appears (including elements
+// a soft navigation swaps in).
+onGroveElement(grove('stream-pill'), el => el.classList.add('fm-tagged'));
+```
+
+| Export | Signature | Behaviour |
+|---|---|---|
+| `onGroveRender` | `(callback) → unsubscribe` | Runs `callback` on ready, then on every coalesced DOM mutation and client-side navigation. Callback must be idempotent. |
+| `onGroveElement` | `(selector, callback) → unsubscribe` | Runs `callback(el)` once per newly-appeared matching element. Built on `onGroveRender`. |
+
+Both lazily start a single shared `MutationObserver` on first use — importing the module has no side effects.
+
 ## Versioning
 
 - **Patch** (0.x.Y): internal refactor, documentation, no selector changes

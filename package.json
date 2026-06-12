@@ -1,6 +1,6 @@
 {
   "name": "@5mts/understory-styling",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Sass adapter for NPR Grove — maps Grove selectors to semantic keys so themes don't hard-code class names.",
   "type": "module",
   "sass": "_index.scss",
@@ -8,6 +8,7 @@
   "exports": {
     ".":                 { "sass": "./_index.scss" },
     "./selectors.js":    "./selectors.js",
+    "./ready.js":        "./ready.js",
     "./_selectors.scss": "./_selectors.scss",
     "./_layout.scss":    "./_layout.scss"
   },
@@ -16,6 +17,7 @@
     "_selectors.scss",
     "_layout.scss",
     "selectors.js",
+    "ready.js",
     "README.md",
     "LICENSE"
   ],

@@ -96,7 +96,7 @@ $grove-selectors-base: (
   people-byline: '.PromoPeople-content',
 
   // main without an accompanying aside element
-  main-without-aside: 'main:not(:has(~ aside), aside ~ main)',
+  main-without-aside: 'main:not(:has(~ aside, aside), aside ~ main)',
 
   // modules
   rich-text: '.RichTextModule',

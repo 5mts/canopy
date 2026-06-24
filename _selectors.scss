@@ -69,7 +69,7 @@ $grove-selectors-base: (
   promo-media:    '[class^="Promo"][class$="-media"]',
   promo-content:    '[class^="Promo"][class$="-content"]',
   audio-player:  '.PH-persistent-player',
-  promo-audio-label: '.PromoAE-audio-label',
+  promo-audio-label: '[class^="Promo"][class$="-audio-label"]',
 
   episode-list:        '.EplB, .EplA',
   episode-list-header: '.EplB-header, EplA-header',
@@ -77,7 +77,7 @@ $grove-selectors-base: (
   episode-list-item:   '.EplB-items-item, EplA-items-item',
 
   // Typography
-  promo-titles:   '.PromoXS-title',
+  promo-title:   '[class^="Promo"][class$="-title"]',
   section-head:  "[id^='section-head']",
 
   // Page regions
@@ -118,6 +118,7 @@ $grove-selectors-base: (
   content-figure-credit: '.Figure-credit, .CarouselSlide-infoAttribution',
   headers: '[class$="-header"]',
   title-text: '[class$="-title"]',
+  description: '[class$="-description"]',
 
   // content types
   news-story:     '.ArtP:not(.aside)',

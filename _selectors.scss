@@ -56,6 +56,7 @@ $grove-selectors-extensions: () !default;
 $grove-selectors-base: (
   // Layout containers
   region-main:  'main',
+  region-footer: '.Page-footer',// .Page-footer-content, .Page-footer .Page-footer-branding',
 
   // page types 
   page-type-podcast: '.PodcastPage',

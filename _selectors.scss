@@ -162,6 +162,7 @@ $grove-selectors-base: (
   author-info:   '[class$="-authorName"]',
   author-position: '[class$="-authorTitle"]',
   timestamp:     '[class$="-timestamp"], [class$="-timestamp"] > *',
+  category: '[class$="-category"]',
 
   // Tabs — Grove emits a `<ps-tabs>` element wrapping a `.Tabs-tabs` list of
   // tab buttons. Active state is signalled via `[data-active="true"]`, with

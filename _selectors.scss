@@ -58,6 +58,8 @@ $grove-selectors-base: (
   region-main:  'main',
   region-footer: '.Page-footer',// .Page-footer-content, .Page-footer .Page-footer-branding',
 
+  container-columns: '.FourColumnContainer, .OneColumnContainer, .ThreeColumnContainer, .TwoColumnContainer3070, .TwoColumnContainer5050, .TwoColumnContainer7030',
+  
   // page types 
   page-type-podcast: '.PodcastPage',
   page-type-podcast-episode: '.PCEP',

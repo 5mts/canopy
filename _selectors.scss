@@ -123,7 +123,7 @@ $grove-selectors-base: (
   news-story:     '.ArtP:not(.aside)',
 
   // podcast
-  podcast-container: '.PodcastPage-main, .PCEP-content',
+  podcast-container: '.PodcastPage-main, .PCEP-content .PCEP-wrapper',
   podcast-aside: '.PodcastPage-aside, .PCEP-aside',
   podcast-primary: '.PodcastPage-wrapper, .PCEP-main',
   podcast-cover-and-title: '.PodcastPage-top',
@@ -141,6 +141,8 @@ $grove-selectors-base: (
   podcast-hostname: ' .PodcastPage-hostName',
   episode-series-header: '.PCEP-parentInfo',
   podcast-header: '.PodcastPage-info',
+
+  episode-container: '.RadioShowPage-main, .PCEP-content .PCEP-wrapper',    // Outer container for individual episode pages (both radio and podcast)
 
   // social links
   social-bar: '.SocialBar',

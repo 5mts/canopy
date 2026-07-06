@@ -81,6 +81,8 @@ $grove-selectors-base: (
 
   // Typography
   promo-title:   '[class^="Promo"][class$="-title"]',
+  header: '[class$="-header"], [class$="-heading"]',
+  header-text: '[class$="-header-title"]',
 
   // Page regions
   page-above:     '.Page-above',

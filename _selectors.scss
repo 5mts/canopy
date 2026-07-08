@@ -75,9 +75,10 @@ $grove-selectors-base: (
   promo-audio-label: '[class^="Promo"][class$="-audio-label"]',
 
   episode-list:        '.EplB, .EplA',
-  episode-list-header: '.EplB-header, EplA-header',
-  episode-list-title:  '.EplB-header-title, EplA-header-title',
-  episode-list-item:   '.EplB-items-item, EplA-items-item',
+  episode-list-wrapper: '.EplB-items, .EplA-items',
+  episode-list-header: '.EplB-header, .EplA-header',
+  episode-list-title:  '.EplB-header-title, .EplA-header-title',
+  episode-list-item:   '.EplB-items-item, .EplA-items-item',
 
   // Typography
   promo-title:   '[class^="Promo"][class$="-title"]',
@@ -268,6 +269,13 @@ $grove-head-suffixes: '-breadcrumbs-wrapper', '-headline', '-contentInfo', '-aud
 $grove-list-prefix:  'List' !default;
 $grove-list-letters: A B C D E F G H !default;
 
+// Episode lists (`.EplA`, `.EplB`) reuse the same `-header` / `-header-title`
+// sub-element structure as the generic lists, so their variants are folded
+// into `list-header` / `list-header-title` below. Single-sourced here — add
+// letters if Grove introduces more episode-list variants.
+$grove-epl-prefix:  'Epl' !default;
+$grove-epl-letters: A !default;
+
 // Promote the common list sub-elements to named selector keys, so themes can
 // target the whole `ListA…ListH` set with a single `grove-selector('list-header')`
 // call instead of repeating the grove-variants() expansion at every call site.
@@ -276,6 +284,14 @@ $grove-list-letters: A B C D E F G H !default;
 // $grove-list-letters and these style-only hooks don't emit JS entries in
 // selectors.js.
 $grove-selectors: map.merge($grove-selectors, (
-  list-header:       grove-variants($grove-list-prefix, '-header', $grove-list-letters),
-  list-header-title: grove-variants($grove-list-prefix, '-header-title', $grove-list-letters),
+  list-header: list.join(
+    grove-variants($grove-list-prefix, '-header', $grove-list-letters),
+    grove-variants($grove-epl-prefix,  '-header', $grove-epl-letters),
+    comma
+  ),
+  list-header-title: list.join(
+    grove-variants($grove-list-prefix, '-header-title', $grove-list-letters),
+    grove-variants($grove-epl-prefix,  '-header-title', $grove-epl-letters),
+    comma
+  ),
 ));

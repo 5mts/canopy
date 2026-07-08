@@ -61,8 +61,16 @@ $grove-selectors-base: (
   container-columns: '.FourColumnContainer, .OneColumnContainer, .ThreeColumnContainer, .TwoColumnContainer3070, .TwoColumnContainer5050, .TwoColumnContainer7030',
   
   // page types 
-  page-type-podcast: '.PodcastPage',
+  page-type-podcast-show: '.PodcastPage',
   page-type-podcast-episode: '.PCEP',
+  page-type-podcast: '.PodcastPage, .PCEP',
+
+  page-type-radio-show: '.RadioShowPage',
+  page-type-radio-episode: '.RSEP',
+  page-type-radio: '.RadioShowPage-body, .RSEP',
+
+  page-type-show-any: '.PodcastPage, .RadioShowPage',
+  page-type-episode-any: '.PCEP, .RSEP',
 
   // Content components
   // Excludes promos nested inside other ps-* containers where the base
@@ -145,8 +153,11 @@ $grove-selectors-base: (
   podcast-cover-art: '.PodcastPage-cover-art',
   podcast-icon-headings: '.PodcastActionBar-heading, .PodcastPage-social .SocialBar-heading',
   podcast-hostname: ' .PodcastPage-hostName',
-  episode-series-header: '.PCEP-parentInfo',
+  episode-series-header: '[class$="EP-parentInfo"]',
   podcast-header: '.PodcastPage-info',
+
+  // radio show
+  radio-header: '.RadioShowPage-info',
 
   episode-container: '.RadioShowPage-main, .PCEP-content .PCEP-wrapper',    // Outer container for individual episode pages (both radio and podcast)
   episode-meta: '.PCEP-contentInfo, .RSEP-contentInfo',

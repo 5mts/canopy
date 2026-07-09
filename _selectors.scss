@@ -159,7 +159,7 @@ $grove-selectors-base: (
   // radio show
   radio-header: '.RadioShowPage-info',
 
-  episode-container: '.RadioShowPage-main, .PCEP-content .PCEP-wrapper',    // Outer container for individual episode pages (both radio and podcast)
+  episode-container: '.RSEP-content .RSEP-wrapper, .PCEP-content .PCEP-wrapper',    // Outer container for individual episode pages (both radio and podcast)
   episode-meta: '.PCEP-contentInfo, .RSEP-contentInfo',
   episode-player: '.PCEP-audioPlayer, .RSEP-audioPlayer',
 

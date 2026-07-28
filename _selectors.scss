@@ -97,7 +97,7 @@ $grove-selectors-base: (
   page-above:     '.Page-above',
   sidebar:        'main > aside',
   main-content:   '[class$="-mainContent"]',
-  main-headline:   'h1',
+  main-headline:   'h1[class$="-headline"]',
   byline:          '[class$="-byline"]',
   header-metadata:  '[class$="-contentInfo"]',
   page-lead:      'main [class$="-lead"]',
@@ -206,6 +206,7 @@ $grove-selectors-base: (
   nav-item-list:     '.NavI-items',
   nav-item-text:     '.NavI-text',
   nav-link:          '.NavLink',
+  nav-group-header:  '.NavigationGroup-title',
   dropdown-nav-items: '.DropdownNavigation-items, .NavI .NavLink',
 
   // Streaming / players

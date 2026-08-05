@@ -178,7 +178,7 @@ $grove-selectors-base: (
   // promo titles to label the category. The `:has(> a)` filter excludes
   // similarly-named utility classes that don't wrap a link.
   eyebrow:       '[class$="-category"]:has(> a), [class$="-breadcrumbs"]:has(a)',
-  author-info:   '[class$="-authorName"]',
+  author-info:   '[class$="-authorName"], [class$="-contributors"]',
   author-position: '[class$="-authorTitle"]',
   timestamp:     '[class$="-timestamp"], [class$="-timestamp"] > *',
   category: '[class$="-category"]',

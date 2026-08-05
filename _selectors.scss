@@ -100,7 +100,7 @@ $grove-selectors-base: (
 
   // Page regions
   page-above:     '.Page-above',
-  sidebar:        'main > aside',
+  sidebar:        'main > aside, [class$="-wrapper"] > aside',
   main-content:   '[class$="-mainContent"]',
   main-headline:   'h1[class$="-headline"]',
   byline:          '[class$="-byline"]',

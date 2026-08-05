@@ -117,6 +117,11 @@ $grove-selectors-base: (
   post-article-tags: '[class$="-tags"]',
   post-article-bio: '[class$="-bottomByline"]',
 
+  archive-container: '[class$="Page-wrapper"]',
+  page-header: '[class$="Page-head"]',
+  page-head-text: '[class$="Page-head-text"]',
+  
+
   // main without an accompanying aside element
   main-without-aside: 'main:not(:has(~ aside, aside), aside ~ main)',
 

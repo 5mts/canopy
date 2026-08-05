@@ -64,6 +64,11 @@ $grove-selectors-base: (
   page-type-podcast-show: '.PodcastPage',
   page-type-podcast-episode: '.PCEP',
   page-type-podcast: '.PodcastPage, .PCEP',
+  page-section: '.SectionPage',
+  page-tag: '.TagPage',
+
+  page-archive: '.SectionPage, .TagPage',
+
 
   page-type-radio-show: '.RadioShowPage',
   page-type-radio-episode: '.RSEP',

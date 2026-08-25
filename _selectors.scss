@@ -45,6 +45,7 @@
 
 @use 'sass:map';
 @use 'sass:list';
+@use 'sass:meta';
 @use 'sass:string';
 
 // Per-site selectors. Empty by default — sites pass their own map via
@@ -173,7 +174,17 @@ $grove-selectors-base: (
   // radio show
   radio-header: '.RadioShowPage-info',
   radio-container: '.RadioShowPage-main, .RSEP-content .RSEP-wrapper',
+  radio-aside:    '.RadioShowPage-aside, .RSEP-aside',
+  radio-primary: '.RadioShowPage-wrapper, .RSEP-main',
+  radio-cover-art: '.RadioShowPage-cover-art',
+  radio-cover-and-title: '.RadioShowPage-top',
+  radio-byline: '.RadioShowPage-byline',
 
+  // combined shows
+  // A list of keys is a composite: grove() resolves each entry by reference,
+  // so these stay in sync with the keys above without repeating selectors.
+  show-container: ('podcast-container', 'radio-container'),
+  show-aside: ('podcast-aside', 'radio-aside'),
   episode-container: '.RSEP-content .RSEP-wrapper, .PCEP-content .PCEP-wrapper',    // Outer container for individual episode pages (both radio and podcast)
   episode-meta: '.PCEP-contentInfo, .RSEP-contentInfo',
   episode-player: '.PCEP-audioPlayer, .RSEP-audioPlayer',
@@ -230,10 +241,27 @@ $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
 
 // Look up a Grove selector by its semantic key. Returns the raw selector.
 // Errors loudly if the key doesn't exist so typos fail at compile time.
-@function grove($key) {
+//
+// A map value may also be a list of other keys — a composite defined by
+// reference, e.g. `show-container: ('podcast-container', 'radio-container')`.
+// References resolve here at lookup time, so composites live inline in the
+// map next to ordinary entries (before or after the keys they point at) and
+// track any future edits to those keys. The JS generator only emits
+// quoted-string entries, so composites never appear in selectors.js.
+@function grove($key, $seen: ()) {
+  @if list.index($seen, $key) {
+    @error "Circular Grove selector reference: #{list.append($seen, $key, comma)}";
+  }
   $value: map.get($grove-selectors, $key);
   @if $value == null {
     @error "No Grove selector found for key: '#{$key}'. Check $grove-selectors-base or add it via $grove-selectors-extensions.";
+  }
+  @if meta.type-of($value) == 'list' {
+    $result: ();
+    @each $ref in $value {
+      $result: list.append($result, grove($ref, list.append($seen, $key)), comma);
+    }
+    @return $result;
   }
   @return $value;
 }

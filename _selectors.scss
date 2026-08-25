@@ -339,15 +339,23 @@ $grove-epl-letters: A !default;
 // $grove-selectors-base, so the letter set stays single-sourced in
 // $grove-list-letters and these style-only hooks don't emit JS entries in
 // selectors.js.
+// These values are literal selectors, not key references, so they must be
+// stored as STRINGS. grove() resolves any *list*-valued entry as a composite
+// of other keys (see show-container etc. above); a bare list of `.ListA-header`
+// selectors would be sent back through grove() as keys and throw
+// "No Grove selector found". Interpolating the comma-list into a quoted string
+// keeps them as plain selectors, matching every other multi-selector entry.
+$_list-header: list.join(
+  grove-variants($grove-list-prefix, '-header', $grove-list-letters),
+  grove-variants($grove-epl-prefix,  '-header', $grove-epl-letters),
+  comma
+);
+$_list-header-title: list.join(
+  grove-variants($grove-list-prefix, '-header-title', $grove-list-letters),
+  grove-variants($grove-epl-prefix,  '-header-title', $grove-epl-letters),
+  comma
+);
 $grove-selectors: map.merge($grove-selectors, (
-  list-header: list.join(
-    grove-variants($grove-list-prefix, '-header', $grove-list-letters),
-    grove-variants($grove-epl-prefix,  '-header', $grove-epl-letters),
-    comma
-  ),
-  list-header-title: list.join(
-    grove-variants($grove-list-prefix, '-header-title', $grove-list-letters),
-    grove-variants($grove-epl-prefix,  '-header-title', $grove-epl-letters),
-    comma
-  ),
+  list-header:       '#{$_list-header}',
+  list-header-title: '#{$_list-header-title}',
 ));

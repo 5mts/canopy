@@ -97,7 +97,6 @@ export const groveSelectors = Object.freeze({
   "radio-icon-headings": ".RadioShowPage-social .SocialBar-heading",
   "radio-hostname": ".RadioShowPage-hostName",
   "radio-header": ".RadioShowPage-info",
-  "episode-container": ".RSEP-content .RSEP-wrapper, .PCEP-content .PCEP-wrapper",
   "episode-meta": ".PCEP-contentInfo, .RSEP-contentInfo",
   "episode-player": ".PCEP-audioPlayer, .RSEP-audioPlayer",
   "show-schedule-info": ".RadioShowPage-mediaSchedule, .PodcastPage-podcastSchedule",

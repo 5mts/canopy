@@ -107,6 +107,7 @@ $grove-selectors-base: (
   main-headline:   'h1[class$="-headline"]',
   byline:          '[class$="-byline"]',
   header-metadata:  '[class$="-contentInfo"]',
+
   page-lead:      'main [class$="-lead"]',
   breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
   people-list:    '.ListPeople',
@@ -119,6 +120,7 @@ $grove-selectors-base: (
   post-article-tags: '[class$="-tags"]',
   post-article-bio: '[class$="-bottomByline"]',
   page-description: '[class$="-pageDescription-content"]',
+  series-banner: '.SeriesBanner',
 
   archive-container: '[class$="Page-wrapper"]',
   page-header: '[class$="Page-head"]',
@@ -191,12 +193,27 @@ $grove-selectors-base: (
   radio-hostname: '.RadioShowPage-hostName',
   radio-header: '.RadioShowPage-info',
 
-  // combined shows
+  // combined shows — union of the podcast-* and radio-* keys above. Because
+  // those underlying keys already span both show pages (.PodcastPage /
+  // .RadioShowPage) and episode pages (.PCEP / .RSEP), one show-* key styles
+  // the component across both media and both page types in a single rule.
   // A list of keys is a composite: grove() resolves each entry by reference,
   // so these stay in sync with the keys above without repeating selectors.
+  // (No show-subscribe/-subscribe-label/-link-inner: those are podcast-only.)
   show-container: ('podcast-container', 'radio-container'),
   show-aside: ('podcast-aside', 'radio-aside'),
-  episode-container: '.RSEP-content .RSEP-wrapper, .PCEP-content .PCEP-wrapper',    // Outer container for individual episode pages (both radio and podcast)
+  show-primary: ('podcast-primary', 'radio-primary'),
+  show-cover-and-title: ('podcast-cover-and-title', 'radio-cover-and-title'),
+  show-cover-art: ('podcast-cover-art', 'radio-cover-art'),
+  show-title: ('podcast-title', 'radio-title'),
+  show-byline: ('podcast-byline', 'radio-byline'),
+  show-description: ('podcast-description', 'radio-description'),
+  show-credits: ('podcast-credits', 'radio-credits'),
+  show-credits-title: ('podcast-credits-title', 'radio-credits-title'),
+  show-social-bar: ('podcast-social-bar', 'radio-social-bar'),
+  show-icon-headings: ('podcast-icon-headings', 'radio-icon-headings'),
+  show-hostname: ('podcast-hostname', 'radio-hostname'),
+  show-header: ('podcast-header', 'radio-header'),
   episode-meta: '.PCEP-contentInfo, .RSEP-contentInfo',
   episode-player: '.PCEP-audioPlayer, .RSEP-audioPlayer',
   show-schedule-info: '.RadioShowPage-mediaSchedule, .PodcastPage-podcastSchedule',
@@ -392,4 +409,6 @@ $_list-header-title: list.join(
 $grove-selectors: map.merge($grove-selectors, (
   list-header:       '#{$_list-header}',
   list-header-title: '#{$_list-header-title}',
+
+  header-elements: "#{grove-variants($grove-news-story-type, '', $grove-head-suffixes)}, #{grove('series-banner')}",
 ));

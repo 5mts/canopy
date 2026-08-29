@@ -323,6 +323,29 @@ $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
   @return $result;
 }
 
+// Grove/Brightspot exposes page context via a <meta name="brightspot-dataLayer">
+// tag whose `content` is a JSON blob. This
+// matches one `"key" : "value"` pair inside it — the building block for scoping
+// styles to a page's program, section, content type, etc.
+@function grove-datalayer-match($key, $value) {
+  @return "meta[name='brightspot-dataLayer'][content*='\"#{$key}\" : \"#{$value}\"']";
+}
+
+// A `body:has(...)` selector that's true when the page's dataLayer `$key` equals
+// `$value`. Pass a list of values to match ANY of them — kept as one body:has()
+// so it stays valid inline before a combinator: `#{$sel} .foo { … }`.
+//
+// Usage:
+//   $program-is-broadside: grove-datalayer-selector('program', 'The Broadside');
+//   $program-is-any: grove-datalayer-selector('program', ('The Broadside', 'WUNC Politics'));
+@function grove-datalayer-selector($key, $values) { 
+  $matches: ();
+  @each $value in $values {
+    $matches: list.append($matches, grove-datalayer-match($key, $value), comma);
+  }
+  @return "html:has(#{$matches})";
+}
+
 
 // Content types and header elements
 $grove-content-types: 'ArtP', 'RSEP' !default;

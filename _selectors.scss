@@ -87,6 +87,7 @@ $grove-selectors-base: (
   promo-content:    '[class^="Promo"][class$="-content"]',
   audio-player:  '.PH-persistent-player',
   promo-audio-label: '[class^="Promo"][class$="-audio-label"]',
+  button: 'button, button.Button, button.Link',
 
   episode-list:        '.EplB, .EplA',
   episode-list-wrapper: '.EplB-items, .EplA-items',
@@ -117,6 +118,7 @@ $grove-selectors-base: (
   article-subhead: 'article h2[class$="-subheadline"]',
   post-article-tags: '[class$="-tags"]',
   post-article-bio: '[class$="-bottomByline"]',
+  page-description: '[class$="-pageDescription-content"]',
 
   archive-container: '[class$="Page-wrapper"]',
   page-header: '[class$="Page-head"]',
@@ -172,13 +174,22 @@ $grove-selectors-base: (
   podcast-header: '.PodcastPage-info',
 
   // radio show
-  radio-header: '.RadioShowPage-info',
   radio-container: '.RadioShowPage-main, .RSEP-content .RSEP-wrapper',
   radio-aside:    '.RadioShowPage-aside, .RSEP-aside',
   radio-primary: '.RadioShowPage-wrapper, .RSEP-main',
   radio-cover-art: '.RadioShowPage-cover-art',
   radio-cover-and-title: '.RadioShowPage-top',
+  radio-title: '.RadioShowPage-headline',
   radio-byline: '.RadioShowPage-byline',
+  radio-description: '.RadioShowPage-byline + *',
+  radio-credits: '.ListPeople',
+  radio-credits-title: '.ListPeople-header-title',
+  radio-social-bar: '.RadioShowPage-social',
+  // Only the social-heading half of podcast-icon-headings — radio has no
+  // podcast-style subscribe action bar (.PodcastActionBar), so that half is omitted.
+  radio-icon-headings: '.RadioShowPage-social .SocialBar-heading',
+  radio-hostname: '.RadioShowPage-hostName',
+  radio-header: '.RadioShowPage-info',
 
   // combined shows
   // A list of keys is a composite: grove() resolves each entry by reference,

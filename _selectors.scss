@@ -1,5 +1,5 @@
 // ==========================================================================
-// understory-styling — Grove Selector Adapter
+// canopy — Grove Selector Adapter
 // ==========================================================================
 //
 // This file maps raw Grove selectors (brittle class names controlled by the
@@ -12,7 +12,7 @@
 // --------------------------------------------------------------------------
 //
 // Basic usage:
-//   @use 'pkg:@5mts/understory-styling' as *;
+//   @use 'pkg:@5mts/canopy' as *;
 //
 //   @include grove-selector('promo') {
 //     background: var(--color-surface);
@@ -31,7 +31,7 @@
 //   }
 //
 // Add per-site selectors that aren't in the shared map:
-//   @use 'pkg:@5mts/understory-styling' with (
+//   @use 'pkg:@5mts/canopy' with (
 //     $grove-selectors-extensions: (
 //       station-ticker: '.my-site-ticker',
 //       donate-banner:  '.my-site-donate'

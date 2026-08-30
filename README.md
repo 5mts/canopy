@@ -1,4 +1,4 @@
-# @5mts/understory-styling
+# @5mts/canopy
 
 A Sass adapter for NPR Grove. Instead of hard-coding class names across your theme files, consume them through this package's semantic map. When Grove renames a class, you update this package — not your theme.
 
@@ -7,7 +7,7 @@ A Sass adapter for NPR Grove. Instead of hard-coding class names across your the
 ## Install
 
 ```bash
-npm install @5mts/understory-styling
+npm install @5mts/canopy
 ```
 
 Requires **Dart Sass 1.78+** (for `pkg:` specifier support).
@@ -15,7 +15,7 @@ Requires **Dart Sass 1.78+** (for `pkg:` specifier support).
 ## Usage
 
 ```scss
-@use 'pkg:@5mts/understory-styling' as *;
+@use 'pkg:@5mts/canopy' as *;
 
 @include grove-selector('promo') {
   background: var(--color-surface);
@@ -42,7 +42,7 @@ body .PH-persistent-player { position: fixed; bottom: 0; }
 Every selector is prefixed with `body` by default. Override at import time:
 
 ```scss
-@use 'pkg:@5mts/understory-styling' with (
+@use 'pkg:@5mts/canopy' with (
   $general-scope: 'body.theme-v2'
 ) as *;
 ```
@@ -63,7 +63,7 @@ The modifier can chain multiple classes: `'.has-player.is-playing'`.
 If your Grove has per-site additions that aren't in the shared map:
 
 ```scss
-@use 'pkg:@5mts/understory-styling' with (
+@use 'pkg:@5mts/canopy' with (
   $grove-selectors-extensions: (
     station-ticker: '.my-site-ticker',
     donate-banner:  '.my-site-donate'
@@ -93,7 +93,7 @@ Extensions override base entries on key collision — useful when a site runs a 
 The same surface area is exposed as a generated ES module so JS and CSS reference one source of truth:
 
 ```js
-import { grove, groveAll, groveOne, groveVariants } from '@5mts/understory-styling/selectors.js';
+import { grove, groveAll, groveOne, groveVariants } from '@5mts/canopy/selectors.js';
 
 document.querySelectorAll(grove('audio-player'));
 groveAll(['promo', 'news-tile']).forEach(el => { /* … */ });
@@ -126,8 +126,8 @@ npm run build:selectors
 On Grove, `DOMContentLoaded` is not enough: custom elements mount *after* it fires, and the CMS navigates client-side without firing it again. `ready.js` is Grove's version of that signal — it runs your code once the DOM is ready and **again on every render and every client-side navigation** (bfcache restore + history `popstate`). Because it re-fires, your callback must be idempotent.
 
 ```js
-import { onGroveRender, onGroveElement } from '@5mts/understory-styling/ready.js';
-import { grove } from '@5mts/understory-styling/selectors.js';
+import { onGroveRender, onGroveElement } from '@5mts/canopy/ready.js';
+import { grove } from '@5mts/canopy/selectors.js';
 
 // Runs on ready, then on every render/navigation — reconcile, don't assume once.
 onGroveRender(() => { /* make the DOM match what you want, idempotently */ });

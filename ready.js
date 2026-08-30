@@ -74,7 +74,7 @@ function runAll() {
     try {
       callback();
     } catch (err) {
-      console.error("[understory] onGroveRender callback failed:", err);
+      console.error("[canopy] onGroveRender callback failed:", err);
     }
   }
 }

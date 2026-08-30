@@ -103,6 +103,7 @@ $grove-selectors-base: (
   // Page regions
   page-above:     '.Page-above',
   sidebar:        'main > aside, [class$="-wrapper"] > aside',
+  sidebar-content: 'aside > [class$="-aside-content"]',
   main-content:   '[class$="-mainContent"]',
   main-headline:   'h1[class$="-headline"]',
   byline:          '[class$="-byline"]',
@@ -122,13 +123,14 @@ $grove-selectors-base: (
   page-description: '[class$="-pageDescription-content"]',
   series-banner: '.SeriesBanner',
 
-  archive-container: '[class$="Page-wrapper"]',
+  page-container: '[class$="Page-wrapper"]',
   page-header: '[class$="Page-head"]',
   page-head-text: '[class$="Page-head-text"]',
   
 
   // main without an accompanying aside element
   main-without-aside: 'main:not(:has(~ aside, aside), aside ~ main)',
+  main-with-aside: 'main:has(~ aside, aside), aside ~ main',
 
   // modules
   rich-text: '.RichTextModule',

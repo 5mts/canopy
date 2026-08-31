@@ -21,6 +21,7 @@
     "_selectors.scss",
     "_layout.scss",
     "patterns/",
+    "examples/",
     "selectors.js",
     "ready.js",
     "relocate.js",

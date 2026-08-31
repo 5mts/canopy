@@ -65,7 +65,9 @@ The mixin emits exactly the mapped selector(s) — no implicit scope. Wrap with 
 @include audio-player-bottom($reserve-footer: 50px);  // pin player, pad footer
 ```
 
-Nothing emits until you `@include`; importing the core never adds CSS you didn't ask for.
+Also in patterns: the `disclosure-dropdown` / `disclosure-accordion` / `disclosure-glyph` mixins — the structural CSS half of `disclosure.js` (see [examples/disclosure.md](examples/disclosure.md)).
+
+Nothing emits until you `@include`; importing the core never adds CSS you didn't ask for. Worked recipes live in [examples/](examples/), one feature per file.
 
 ### Page context
 
@@ -120,7 +122,7 @@ disclosure(container, {
 });
 ```
 
-Prepends a `<button aria-expanded>` toggle to the container — that's the whole job. JS flips the attribute; **all** visibility is consumer CSS keyed off `[aria-expanded]` (hide the collapsed content, reveal via `:has()`). There is deliberately no breakpoint in the API: put your collapse rules inside a media query for "dropdown only below N px", or leave them unscoped for "always a dropdown". Idempotent per container — safe inside `onGroveRender`.
+Prepends a `<button aria-expanded>` toggle to the container — that's the whole job. JS flips the attribute; **all** visibility is consumer CSS keyed off `[aria-expanded]`. The structural half of that CSS (collapse, overlay, `:has()` reveal, `@supports` gating) ships as the `disclosure-dropdown` / `disclosure-accordion` pattern mixins — see [examples/disclosure.md](examples/disclosure.md). There is deliberately no breakpoint in the API: put the mixin call inside a media query for "dropdown only below N px", or leave it unscoped for "always a dropdown". Idempotent per container — safe inside `onGroveRender`.
 
 ## Regenerating selectors.js
 

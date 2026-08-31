@@ -2,16 +2,11 @@
 // Regenerate via: npm run build:selectors
 
 export const groveSelectors = Object.freeze({
-  "region-main": "main",
   "region-footer": ".Page-footer",
   "container-columns": ".FourColumnContainer, .OneColumnContainer, .ThreeColumnContainer, .TwoColumnContainer3070, .TwoColumnContainer5050, .TwoColumnContainer7030",
-  "page-type-podcast-show": ".PodcastPage",
   "page-type-podcast-episode": ".PCEP",
   "page-type-podcast": ".PodcastPage, .PCEP",
-  "page-section": ".SectionPage",
-  "page-tag": ".TagPage",
   "page-archive": ".SectionPage, .TagPage",
-  "page-type-radio-show": ".RadioShowPage",
   "page-type-radio-episode": ".RSEP",
   "page-type-radio": ".RadioShowPage-body, .RSEP",
   "page-type-show-any": ".PodcastPage, .RadioShowPage",
@@ -30,7 +25,6 @@ export const groveSelectors = Object.freeze({
   "promo-title": "[class^=\"Promo\"][class$=\"-title\"]",
   "header": "[class$=\"-header\"], [class$=\"-heading\"]",
   "header-text": "[class$=\"-header-title\"]",
-  "page-above": ".Page-above",
   "sidebar": "main > aside, [class$=\"-wrapper\"] > aside",
   "sidebar-content": "aside > [class$=\"-aside-content\"]",
   "main-content": "[class$=\"-mainContent\"]",
@@ -39,10 +33,6 @@ export const groveSelectors = Object.freeze({
   "header-metadata": "[class$=\"-contentInfo\"]",
   "page-lead": "main [class$=\"-lead\"]",
   "breadcrumbs": "[class$=\"-breadcrumbs-wrapper\"]",
-  "people-list": ".ListPeople",
-  "people-list-wrapper": ".ListPeople-items",
-  "people-list-item": ".ListPeople-items-item",
-  "people-image": ".PromoPeople-media",
   "people-byline": ".PromoPeople-content",
   "article-body": "article [class$=\"-articleBody\"]",
   "article-subhead": "article h2[class$=\"-subheadline\"]",
@@ -55,14 +45,10 @@ export const groveSelectors = Object.freeze({
   "page-head-text": "[class$=\"Page-head-text\"]",
   "main-without-aside": "main:not(:has(~ aside, aside), aside ~ main)",
   "main-with-aside": "main:has(~ aside, aside), aside ~ main",
-  "rich-text": ".RichTextModule",
   "article-sidebar": "[class$=\"-sidebar\"], [class$=\"-aside\"]",
   "metadata-relocatable-links": "[class$=\"-contentInfo\"] a",
   "content-image": "figure .Image, .PromoXS-media .Image",
-  "image": ".Image",
-  "content-figure-content": ".Figure-content",
   "content-figure-caption": ".Figure-caption, .CarouselSlide-infoDescription",
-  "content-figure-credit-container": ".Figure-credit-container",
   "content-figure-credit": ".Figure-credit, .CarouselSlide-infoAttribution",
   "headers": "[class$=\"-header\"]",
   "title-text": "[class$=\"-title\"]",
@@ -79,7 +65,6 @@ export const groveSelectors = Object.freeze({
   "podcast-credits-title": ".ListPeople-header-title",
   "podcast-subscribe": ".PodcastActionBar",
   "podcast-subscribe-label": ".PodcastLink-provider",
-  "podcast-link-inner": ".PodcastLink",
   "podcast-social-bar": ".PodcastPage-social",
   "podcast-cover-art": ".PodcastPage-cover-art",
   "podcast-icon-headings": ".PodcastActionBar-heading, .PodcastPage-social .SocialBar-heading",
@@ -103,33 +88,20 @@ export const groveSelectors = Object.freeze({
   "episode-meta": ".PCEP-contentInfo, .RSEP-contentInfo",
   "episode-player": ".PCEP-audioPlayer, .RSEP-audioPlayer",
   "show-schedule-info": ".RadioShowPage-mediaSchedule, .PodcastPage-podcastSchedule",
-  "social-bar": ".SocialBar",
   "news-tile": "ps-promo[data-content-type=\"news-story\"]",
   "eyebrow": "[class$=\"-category\"]:has(> a), [class$=\"-breadcrumbs\"]:has(a)",
   "author-info": "[class$=\"-authorName\"], [class$=\"-contributors\"], [class$=\"-hostName\"]",
   "author-position": "[class$=\"-authorTitle\"]",
   "timestamp": "[class$=\"-timestamp\"], [class$=\"-timestamp\"] > *",
   "category": "[class$=\"-category\"]",
-  "tabs": "ps-tabs",
-  "tabs-list": ".Tabs-tabs",
-  "tabs-header": ".Tabs-header",
   "tab": "ps-tabs .Tabs-tabs-tab",
   "tab-active": "ps-tabs [role=\"tab\"][data-active=\"true\"], ps-tabs .Tabs-tabs-tab[data-active=\"true\"]",
-  "tabs-title": "ps-tabs .Tabs-header-title",
-  "tabs-content": "ps-tabs .Tabs-content",
-  "action-bar": ".ActionBar",
-  "action-bar-item": ".ActionBar-items-item",
-  "action-link": ".ActionLink",
   "social-action": ".ActionLink[data-social-service]",
   "nav-bar": ".PH-nav-bar",
   "nav-item": ".NavI",
   "nav-item-list": ".NavI-items",
   "nav-item-text": ".NavI-text",
-  "nav-link": ".NavLink",
-  "nav-group-header": ".NavigationGroup-title",
   "dropdown-nav-items": ".DropdownNavigation-items, .NavI .NavLink",
-  "stream-container": "ps-stream",
-  "stream-pill": ".StreamPill",
   "stream-pill-highlighted": ".StreamPill:hover, [playing] .StreamPill",
 });
 
@@ -142,7 +114,7 @@ export function grove(key) {
   if (value == null) {
     throw new Error(
       `No Grove selector found for key: '${key}'. ` +
-      `Check $grove-selectors-base or add it via $grove-selectors-extensions.`
+      `Check $grove-selectors-base — or write the raw selector if the class is plainly readable.`
     );
   }
   return value;

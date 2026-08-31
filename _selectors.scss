@@ -1,11 +1,18 @@
 // ==========================================================================
-// canopy — Grove Selector Adapter
+// canopy — Grove Selector Knowledge
 // ==========================================================================
 //
-// This file maps raw Grove selectors (brittle class names controlled by the
-// Grove vendor) to semantic keys (stable names your theme code uses). When
-// the Grove vendor renames a class, you update ONE entry here and every
-// theme that depends on this package gets the fix on the next install.
+// A curated map of the Grove selectors that are genuinely hard to know or
+// easy to get wrong. THE KEEP-TEST: an entry earns its place only if it adds
+// information the raw selector lacks —
+//   - unions of many classes            (container-columns, episode-list)
+//   - composites by key reference       (show-*: ('podcast-x', 'radio-x'))
+//   - gnarly logic                      (promo, main-with-aside, eyebrow)
+//   - variant-suffix attribute patterns (promo-title, byline, main-content)
+//   - opaque class decoders             (.PCEP, .PH-persistent-player, .NavI)
+//
+// Plain readable 1:1 classes (.SocialBar, .Image, ps-tabs) are NOT mapped —
+// write those raw in your theme; the class name already says what it is.
 //
 // --------------------------------------------------------------------------
 // HOW TO CONSUME (from a theme repo)
@@ -30,16 +37,8 @@
 //     @include grove-selector('main-content') { … }
 //   }
 //
-// Add per-site selectors that aren't in the shared map:
-//   @use 'pkg:@5mts/canopy' with (
-//     $grove-selectors-extensions: (
-//       station-ticker: '.my-site-ticker',
-//       donate-banner:  '.my-site-donate'
-//     )
-//   ) as *;
-//
-// Conflicts resolve in favor of the extension — sites can override a
-// shared entry when the local Grove variant differs.
+// Site-specific selector groupings belong in your own theme variables, not
+// here — see wunc-grove's abstracts/_selectors.scss for the pattern.
 //
 // --------------------------------------------------------------------------
 
@@ -48,30 +47,22 @@
 @use 'sass:meta';
 @use 'sass:string';
 
-// Per-site selectors. Empty by default — sites pass their own map via
-// `with ($grove-selectors-extensions: (...))`.
-$grove-selectors-extensions: () !default;
-
 // Canonical selectors shipped with the package. Update these when the Grove
 // vendor changes a class name and bump the package version.
 $grove-selectors-base: (
   // Layout containers
-  region-main:  'main',
+  // kept while a union tail is under evaluation (see commented selectors)
   region-footer: '.Page-footer',// .Page-footer-content, .Page-footer .Page-footer-branding',
 
   container-columns: '.FourColumnContainer, .OneColumnContainer, .ThreeColumnContainer, .TwoColumnContainer3070, .TwoColumnContainer5050, .TwoColumnContainer7030',
-  
-  // page types 
-  page-type-podcast-show: '.PodcastPage',
+
+  // page types — unions and opaque abbreviations only; readable single
+  // classes (.PodcastPage, .SectionPage, .TagPage, .RadioShowPage) go raw
   page-type-podcast-episode: '.PCEP',
   page-type-podcast: '.PodcastPage, .PCEP',
-  page-section: '.SectionPage',
-  page-tag: '.TagPage',
 
   page-archive: '.SectionPage, .TagPage',
 
-
-  page-type-radio-show: '.RadioShowPage',
   page-type-radio-episode: '.RSEP',
   page-type-radio: '.RadioShowPage-body, .RSEP',
 
@@ -101,7 +92,6 @@ $grove-selectors-base: (
   header-text: '[class$="-header-title"]',
 
   // Page regions
-  page-above:     '.Page-above',
   sidebar:        'main > aside, [class$="-wrapper"] > aside',
   sidebar-content: 'aside > [class$="-aside-content"]',
   main-content:   '[class$="-mainContent"]',
@@ -111,10 +101,7 @@ $grove-selectors-base: (
 
   page-lead:      'main [class$="-lead"]',
   breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
-  people-list:    '.ListPeople',
-  people-list-wrapper: '.ListPeople-items',
-  people-list-item: '.ListPeople-items-item',
-  people-image: '.PromoPeople-media',
+  // opaque: nothing in '.PromoPeople-content' says "byline"
   people-byline: '.PromoPeople-content',
   article-body: 'article [class$="-articleBody"]',
   article-subhead: 'article h2[class$="-subheadline"]',
@@ -126,14 +113,11 @@ $grove-selectors-base: (
   page-container: '[class$="Page-wrapper"]',
   page-header: '[class$="Page-head"]',
   page-head-text: '[class$="Page-head-text"]',
-  
+
 
   // main without an accompanying aside element
   main-without-aside: 'main:not(:has(~ aside, aside), aside ~ main)',
   main-with-aside: 'main:has(~ aside, aside), aside ~ main',
-
-  // modules
-  rich-text: '.RichTextModule',
 
   // Sidebar slot — destination for JS-relocated content (e.g. metadata links).
   // First-pass selector covering known Grove side-region variants; refine after
@@ -145,10 +129,7 @@ $grove-selectors-base: (
   metadata-relocatable-links: '[class$="-contentInfo"] a',
 
   content-image:   'figure .Image, .PromoXS-media .Image',
-  image: '.Image',
-  content-figure-content: '.Figure-content',
   content-figure-caption: '.Figure-caption, .CarouselSlide-infoDescription',
-  content-figure-credit-container: '.Figure-credit-container',
   content-figure-credit: '.Figure-credit, .CarouselSlide-infoAttribution',
   headers: '[class$="-header"]',
   title-text: '[class$="-title"]',
@@ -168,8 +149,8 @@ $grove-selectors-base: (
   podcast-credits: '.ListPeople',
   podcast-credits-title: '.ListPeople-header-title',
   podcast-subscribe: '.PodcastActionBar',
+  // opaque: '.PodcastLink-provider' doesn't say "subscribe label"
   podcast-subscribe-label: '.PodcastLink-provider',
-  podcast-link-inner: '.PodcastLink',
   podcast-social-bar: '.PodcastPage-social',
   podcast-cover-art: '.PodcastPage-cover-art',
   podcast-icon-headings: '.PodcastActionBar-heading, .PodcastPage-social .SocialBar-heading',
@@ -220,9 +201,6 @@ $grove-selectors-base: (
   episode-player: '.PCEP-audioPlayer, .RSEP-audioPlayer',
   show-schedule-info: '.RadioShowPage-mediaSchedule, .PodcastPage-podcastSchedule',
 
-  // social links
-  social-bar: '.SocialBar',
-
   // News tile
   news-tile:     'ps-promo[data-content-type="news-story"]',
 
@@ -235,39 +213,26 @@ $grove-selectors-base: (
   timestamp:     '[class$="-timestamp"], [class$="-timestamp"] > *',
   category: '[class$="-category"]',
 
-  // Tabs — Grove emits a `<ps-tabs>` element wrapping a `.Tabs-tabs` list of
-  // tab buttons. Active state is signalled via `[data-active="true"]`, with
-  // a `.Tabs-tabs-tab` class as an alternative hook some Grove variants use.
-  tabs:          'ps-tabs',
-  tabs-list:     '.Tabs-tabs',
-  tabs-header:   '.Tabs-header',
+  // Tabs — active state is signalled via `[data-active="true"]`, with a
+  // `.Tabs-tabs-tab` class as an alternative hook some Grove variants use.
   tab:           'ps-tabs .Tabs-tabs-tab',
   tab-active:    'ps-tabs [role="tab"][data-active="true"], ps-tabs .Tabs-tabs-tab[data-active="true"]',
-  tabs-title:    'ps-tabs .Tabs-header-title',
-  tabs-content:  'ps-tabs .Tabs-content',
 
-  // Action bar — share/social/save links rendered as a row of icon buttons
-  action-bar:      '.ActionBar',
-  action-bar-item: '.ActionBar-items-item',
-  action-link:     '.ActionLink',
+  // Action bar item filtered to social-service links only
   social-action:   '.ActionLink[data-social-service]',
 
-  // Navigation
+  // Navigation — opaque abbreviations (.PH-*, .NavI)
   nav-bar:           '.PH-nav-bar',
   nav-item:          '.NavI',
   nav-item-list:     '.NavI-items',
   nav-item-text:     '.NavI-text',
-  nav-link:          '.NavLink',
-  nav-group-header:  '.NavigationGroup-title',
   dropdown-nav-items: '.DropdownNavigation-items, .NavI .NavLink',
 
   // Streaming / players
-  stream-container:        'ps-stream',
-  stream-pill:             '.StreamPill',
   stream-pill-highlighted: '.StreamPill:hover, [playing] .StreamPill',
 );
 
-$grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
+$grove-selectors: $grove-selectors-base;
 
 // Look up a Grove selector by its semantic key. Returns the raw selector.
 // Errors loudly if the key doesn't exist so typos fail at compile time.
@@ -284,7 +249,7 @@ $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
   }
   $value: map.get($grove-selectors, $key);
   @if $value == null {
-    @error "No Grove selector found for key: '#{$key}'. Check $grove-selectors-base or add it via $grove-selectors-extensions.";
+    @error "No Grove selector found for key: '#{$key}'. Check $grove-selectors-base — or write the raw selector if the class is plainly readable.";
   }
   @if meta.type-of($value) == 'list' {
     $result: ();

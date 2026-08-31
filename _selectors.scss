@@ -51,23 +51,26 @@
 // vendor changes a class name and bump the package version.
 $grove-selectors-base: (
   // Layout containers
-  // kept while a union tail is under evaluation (see commented selectors)
-  region-footer: '.Page-footer',// .Page-footer-content, .Page-footer .Page-footer-branding',
+  // kept while a union tail is under evaluation; candidate union:
+  //   '.Page-footer, .Page-footer-content, .Page-footer .Page-footer-branding'
+  region-footer: '.Page-footer',
 
   container-columns: '.FourColumnContainer, .OneColumnContainer, .ThreeColumnContainer, .TwoColumnContainer3070, .TwoColumnContainer5050, .TwoColumnContainer7030',
 
-  // page types — unions and opaque abbreviations only; readable single
-  // classes (.PodcastPage, .SectionPage, .TagPage, .RadioShowPage) go raw
-  page-type-podcast-episode: '.PCEP',
-  page-type-podcast: '.PodcastPage, .PCEP',
+  // page identity predicates — unions and opaque abbreviations only; readable
+  // single classes (.PodcastPage, .SectionPage, .TagPage, .RadioShowPage) go raw.
+  // NOTE the radio asymmetry (.RadioShowPage-body vs podcast's bare page class)
+  // is as-inspected on Grove — confirm before "fixing".
+  page-is-podcast-episode: '.PCEP',
+  page-is-podcast: '.PodcastPage, .PCEP',
 
-  page-archive: '.SectionPage, .TagPage',
+  page-is-archive: '.SectionPage, .TagPage',
 
-  page-type-radio-episode: '.RSEP',
-  page-type-radio: '.RadioShowPage-body, .RSEP',
+  page-is-radio-episode: '.RSEP',
+  page-is-radio: '.RadioShowPage-body, .RSEP',
 
-  page-type-show-any: '.PodcastPage, .RadioShowPage',
-  page-type-episode-any: '.PCEP, .RSEP',
+  page-is-show-any: '.PodcastPage, .RadioShowPage',
+  page-is-episode-any: '.PCEP, .RSEP',
 
   // Content components
   // Excludes promos nested inside other ps-* containers where the base
@@ -88,8 +91,10 @@ $grove-selectors-base: (
 
   // Typography
   promo-title:   '[class^="Promo"][class$="-title"]',
-  header: '[class$="-header"], [class$="-heading"]',
-  header-text: '[class$="-header-title"]',
+  // Grove suffixes component headers with -header OR -heading interchangeably;
+  // this union covers both so themes never have to know which one a component uses
+  heading: '[class$="-header"], [class$="-heading"]',
+  heading-title: '[class$="-header-title"]',
 
   // Page regions
   sidebar:        'main > aside, [class$="-wrapper"] > aside',
@@ -97,7 +102,8 @@ $grove-selectors-base: (
   main-content:   '[class$="-mainContent"]',
   main-headline:   'h1[class$="-headline"]',
   byline:          '[class$="-byline"]',
-  header-metadata:  '[class$="-contentInfo"]',
+  // -contentInfo = the byline/timestamp metadata block under an article head
+  content-meta:  '[class$="-contentInfo"]',
 
   page-lead:      'main [class$="-lead"]',
   breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
@@ -131,7 +137,6 @@ $grove-selectors-base: (
   content-image:   'figure .Image, .PromoXS-media .Image',
   content-figure-caption: '.Figure-caption, .CarouselSlide-infoDescription',
   content-figure-credit: '.Figure-credit, .CarouselSlide-infoAttribution',
-  headers: '[class$="-header"]',
   title-text: '[class$="-title"]',
   description: '[class$="-description"]',
 
@@ -154,7 +159,7 @@ $grove-selectors-base: (
   podcast-social-bar: '.PodcastPage-social',
   podcast-cover-art: '.PodcastPage-cover-art',
   podcast-icon-headings: '.PodcastActionBar-heading, .PodcastPage-social .SocialBar-heading',
-  podcast-hostname: ' .PodcastPage-hostName',
+  podcast-hostname: '.PodcastPage-hostName',
   episode-series-header: '[class$="EP-parentInfo"]',
   podcast-header: '.PodcastPage-info',
 
@@ -182,7 +187,7 @@ $grove-selectors-base: (
   // the component across both media and both page types in a single rule.
   // A list of keys is a composite: grove() resolves each entry by reference,
   // so these stay in sync with the keys above without repeating selectors.
-  // (No show-subscribe/-subscribe-label/-link-inner: those are podcast-only.)
+  // (No show-subscribe/-subscribe-label: those are podcast-only.)
   show-container: ('podcast-container', 'radio-container'),
   show-aside: ('podcast-aside', 'radio-aside'),
   show-primary: ('podcast-primary', 'radio-primary'),
@@ -254,7 +259,12 @@ $grove-selectors: $grove-selectors-base;
   @if meta.type-of($value) == 'list' {
     $result: ();
     @each $ref in $value {
-      $result: list.append($result, grove($ref, list.append($seen, $key)), comma);
+      $resolved: grove($ref, list.append($seen, $key));
+      // dedupe: composite members may resolve to the same selector
+      // (e.g. podcast-credits and radio-credits are both '.ListPeople')
+      @if not list.index($result, $resolved) {
+        $result: list.append($result, $resolved, comma);
+      }
     }
     @return $result;
   }
@@ -270,8 +280,8 @@ $grove-selectors: $grove-selectors-base;
 //   @include grove-selector('promo') { … }
 //   → ps-promo[…] { … }
 //
-//   @include grove-selector(('news-tile', 'tabs')) { … }
-//   → ps-promo[…], ps-tabs { … }
+//   @include grove-selector(('news-tile', 'tab')) { … }
+//   → ps-promo[data-content-type="news-story"], ps-tabs .Tabs-tabs-tab { … }
 //
 //   body.has-player {
 //     @include grove-selector('audio-player') { … }
@@ -307,25 +317,25 @@ $grove-selectors: $grove-selectors-base;
   @return $result;
 }
 
-// Grove/Brightspot exposes page context via a <meta name="brightspot-dataLayer">
-// tag whose `content` is a JSON blob. This
-// matches one `"key" : "value"` pair inside it — the building block for scoping
-// styles to a page's program, section, content type, etc.
-@function grove-datalayer-match($key, $value) {
+// Match one `"key" : "value"` pair in the page-context metadata (currently a
+// <meta name="brightspot-dataLayer"> JSON blob — the mechanism is this
+// function's secret). Known keys: `program`, `category` (= Grove Section),
+// `keywords` (= Grove Tags), `pageType`, `series`.
+@function grove-page-match($key, $value) {
   @return "meta[name='brightspot-dataLayer'][content*='\"#{$key}\" : \"#{$value}\"']";
 }
 
-// A `body:has(...)` selector that's true when the page's dataLayer `$key` equals
-// `$value`. Pass a list of values to match ANY of them — kept as one body:has()
-// so it stays valid inline before a combinator: `#{$sel} .foo { … }`.
+// An `html:has(...)` selector that's true when the page's context `$key`
+// equals `$value`. Pass a list of values to match ANY of them — kept as one
+// :has() so it stays valid inline before a combinator: `#{$sel} .foo { … }`.
 //
 // Usage:
-//   $program-is-broadside: grove-datalayer-selector('program', 'The Broadside');
-//   $program-is-any: grove-datalayer-selector('program', ('The Broadside', 'WUNC Politics'));
-@function grove-datalayer-selector($key, $values) { 
+//   $program-is-broadside: grove-page-is('program', 'The Broadside');
+//   $program-is-any: grove-page-is('program', ('The Broadside', 'WUNC Politics'));
+@function grove-page-is($key, $values) {
   $matches: ();
   @each $value in $values {
-    $matches: list.append($matches, grove-datalayer-match($key, $value), comma);
+    $matches: list.append($matches, grove-page-match($key, $value), comma);
   }
   @return "html:has(#{$matches})";
 }
@@ -334,7 +344,7 @@ $grove-selectors: $grove-selectors-base;
 // Content types and header elements
 $grove-content-types: 'ArtP', 'RSEP' !default;
 $grove-news-story-type: 'ArtP';
-$grove-head-suffixes: '-breadcrumbs-wrapper', '-headline', '-contentInfo', '-audioPlayer', 'parentInfo' !default;
+$grove-head-suffixes: '-breadcrumbs-wrapper', '-headline', '-contentInfo', '-audioPlayer', '-parentInfo' !default;
 
 // List components — Grove emits per-variant list wrappers (`.ListA`, `.ListB`,
 // …, `.ListH`) whose child classes differ only by the variant letter. The
@@ -343,10 +353,10 @@ $grove-head-suffixes: '-breadcrumbs-wrapper', '-headline', '-contentInfo', '-aud
 $grove-list-prefix:  'List' !default;
 $grove-list-letters: A B C D E F G H !default;
 
-// Episode lists (`.EplA`, `.EplB`) reuse the same `-header` / `-header-title`
-// sub-element structure as the generic lists, so their variants are folded
-// into `list-header` / `list-header-title` below. Single-sourced here — add
-// letters if Grove introduces more episode-list variants.
+// Episode lists reuse the same `-header` / `-header-title` sub-element
+// structure as the generic lists. Only `.EplA` is folded into `list-header` /
+// `list-header-title` below — `.EplB` is deliberately excluded (the theme
+// treats it as a non-tile list). Add letters here to fold more variants in.
 $grove-epl-prefix:  'Epl' !default;
 $grove-epl-letters: A !default;
 
@@ -377,5 +387,5 @@ $grove-selectors: map.merge($grove-selectors, (
   list-header:       '#{$_list-header}',
   list-header-title: '#{$_list-header-title}',
 
-  header-elements: "#{grove-variants($grove-news-story-type, '', $grove-head-suffixes)}, #{grove('series-banner')}",
+  news-story-head-meta: "#{grove-variants($grove-news-story-type, '', $grove-head-suffixes)}, #{grove('series-banner')}",
 ));

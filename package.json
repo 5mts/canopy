@@ -7,8 +7,12 @@
   "main": "_index.scss",
   "exports": {
     ".":                 { "sass": "./_index.scss" },
+    "./patterns":        { "sass": "./patterns/_index.scss" },
+    "./patterns.scss":   { "sass": "./patterns/_index.scss" },
     "./selectors.js":    "./selectors.js",
     "./ready.js":        "./ready.js",
+    "./relocate.js":     "./relocate.js",
+    "./disclosure.js":   "./disclosure.js",
     "./_selectors.scss": "./_selectors.scss",
     "./_layout.scss":    "./_layout.scss"
   },
@@ -16,8 +20,11 @@
     "_index.scss",
     "_selectors.scss",
     "_layout.scss",
+    "patterns/",
     "selectors.js",
     "ready.js",
+    "relocate.js",
+    "disclosure.js",
     "README.md",
     "LICENSE"
   ],

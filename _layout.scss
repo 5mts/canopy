@@ -28,13 +28,12 @@ $grove-breakpoints-base: (
   lg: 1240px,
 ) !default;
 
-$grove-breakpoints-extensions: () !default;
-$grove-breakpoints: map.merge($grove-breakpoints-base, $grove-breakpoints-extensions);
+$grove-breakpoints: $grove-breakpoints-base;
 
 @function grove-bp($key) {
   $value: map.get($grove-breakpoints, $key);
   @if $value == null {
-    @error "No Grove breakpoint found for key: '#{$key}'. Check $grove-breakpoints-base or add it via $grove-breakpoints-extensions.";
+    @error "No Grove breakpoint found for key: '#{$key}'. Check $grove-breakpoints-base — theme-specific breakpoints belong in your own tokens.";
   }
   @return $value;
 }

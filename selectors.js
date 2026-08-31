@@ -4,13 +4,13 @@
 export const groveSelectors = Object.freeze({
   "region-footer": ".Page-footer",
   "container-columns": ".FourColumnContainer, .OneColumnContainer, .ThreeColumnContainer, .TwoColumnContainer3070, .TwoColumnContainer5050, .TwoColumnContainer7030",
-  "page-type-podcast-episode": ".PCEP",
-  "page-type-podcast": ".PodcastPage, .PCEP",
-  "page-archive": ".SectionPage, .TagPage",
-  "page-type-radio-episode": ".RSEP",
-  "page-type-radio": ".RadioShowPage-body, .RSEP",
-  "page-type-show-any": ".PodcastPage, .RadioShowPage",
-  "page-type-episode-any": ".PCEP, .RSEP",
+  "page-is-podcast-episode": ".PCEP",
+  "page-is-podcast": ".PodcastPage, .PCEP",
+  "page-is-archive": ".SectionPage, .TagPage",
+  "page-is-radio-episode": ".RSEP",
+  "page-is-radio": ".RadioShowPage-body, .RSEP",
+  "page-is-show-any": ".PodcastPage, .RadioShowPage",
+  "page-is-episode-any": ".PCEP, .RSEP",
   "promo": "ps-promo:not(:where(ps-tabs,.EplB) ps-promo)",
   "promo-media": "[class^=\"Promo\"][class$=\"-media\"]",
   "promo-content": "[class^=\"Promo\"][class$=\"-content\"]",
@@ -23,14 +23,14 @@ export const groveSelectors = Object.freeze({
   "episode-list-title": ".EplB-header-title, .EplA-header-title",
   "episode-list-item": ".EplB-items-item, .EplA-items-item",
   "promo-title": "[class^=\"Promo\"][class$=\"-title\"]",
-  "header": "[class$=\"-header\"], [class$=\"-heading\"]",
-  "header-text": "[class$=\"-header-title\"]",
+  "heading": "[class$=\"-header\"], [class$=\"-heading\"]",
+  "heading-title": "[class$=\"-header-title\"]",
   "sidebar": "main > aside, [class$=\"-wrapper\"] > aside",
   "sidebar-content": "aside > [class$=\"-aside-content\"]",
   "main-content": "[class$=\"-mainContent\"]",
   "main-headline": "h1[class$=\"-headline\"]",
   "byline": "[class$=\"-byline\"]",
-  "header-metadata": "[class$=\"-contentInfo\"]",
+  "content-meta": "[class$=\"-contentInfo\"]",
   "page-lead": "main [class$=\"-lead\"]",
   "breadcrumbs": "[class$=\"-breadcrumbs-wrapper\"]",
   "people-byline": ".PromoPeople-content",
@@ -50,7 +50,6 @@ export const groveSelectors = Object.freeze({
   "content-image": "figure .Image, .PromoXS-media .Image",
   "content-figure-caption": ".Figure-caption, .CarouselSlide-infoDescription",
   "content-figure-credit": ".Figure-credit, .CarouselSlide-infoAttribution",
-  "headers": "[class$=\"-header\"]",
   "title-text": "[class$=\"-title\"]",
   "description": "[class$=\"-description\"]",
   "news-story": ".ArtP:not(.aside)",
@@ -68,7 +67,7 @@ export const groveSelectors = Object.freeze({
   "podcast-social-bar": ".PodcastPage-social",
   "podcast-cover-art": ".PodcastPage-cover-art",
   "podcast-icon-headings": ".PodcastActionBar-heading, .PodcastPage-social .SocialBar-heading",
-  "podcast-hostname": " .PodcastPage-hostName",
+  "podcast-hostname": ".PodcastPage-hostName",
   "episode-series-header": "[class$=\"EP-parentInfo\"]",
   "podcast-header": ".PodcastPage-info",
   "radio-container": ".RadioShowPage-main, .RSEP-content .RSEP-wrapper",
@@ -107,7 +106,7 @@ export const groveSelectors = Object.freeze({
 
 export const groveContentTypes  = Object.freeze(["ArtP","RSEP"]);
 export const groveNewsStoryType = "ArtP";
-export const groveHeadSuffixes  = Object.freeze(["-breadcrumbs-wrapper","-headline","-contentInfo","-audioPlayer","parentInfo"]);
+export const groveHeadSuffixes  = Object.freeze(["-breadcrumbs-wrapper","-headline","-contentInfo","-audioPlayer","-parentInfo"]);
 
 export function grove(key) {
   const value = groveSelectors[key];

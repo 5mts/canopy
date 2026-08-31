@@ -13,6 +13,7 @@
 //                                  // selector or element); if given but not
 //                                  // found, no button is built
 //     closeOnOutsideClick: false,  // click outside the container closes it
+//     closeOnEscape: false,        // Escape closes it and refocuses the button
 //   }) → the button (or null)
 
 let uid = 0;
@@ -41,6 +42,7 @@ export function disclosure(container, options = {}) {
     toggleClass = "fm-disclosure-toggle",
     panel,
     closeOnOutsideClick = false,
+    closeOnEscape = false,
   } = options;
 
   // Built once per container — the existing toggle is the guard, so a
@@ -75,6 +77,16 @@ export function disclosure(container, options = {}) {
         listenerBound = true;
         document.addEventListener("click", handleOutsideClick);
       }
+    }
+
+    if (closeOnEscape) {
+      // container-level listener: dies with the subtree on a nav swap, no leak
+      container.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && button.getAttribute("aria-expanded") === "true") {
+          button.setAttribute("aria-expanded", "false");
+          button.focus();
+        }
+      });
     }
   }
 

@@ -11,7 +11,7 @@ Restyling a Grove means fighting selectors you don't control: variant classes th
 - **The selector map** — unions, composites, and gnarly selectors you shouldn't have to rediscover: `grove('main-with-aside')`, `grove('promo')`, `grove('container-columns')`.
 - **Page-context matching** — `grove-page-is('program', 'The Broadside')` scopes styles to a page's program/section/tags without knowing how Grove exposes them.
 - **Patterns** (opt-in Sass) — `column-list`, `audio-player-bottom`: whole restyle jobs as one `@include`.
-- **JS runtime** — `ready.js` (Grove's answer to DOMContentLoaded), `relocate.js` (move DOM that survives client-side navigation), `disclosure.js` (ARIA dropdown/accordion state), and the selector map mirrored to JS.
+- **JS runtime** — `ready.js` (Grove's answer to DOMContentLoaded), `relocate.js` (move DOM that survives client-side navigation), `disclosure.js` (ARIA dropdown/accordion state), `subnav.js` (section-nav a11y + current-page marking), and the selector map mirrored to JS.
 
 ## What's deliberately NOT in the box
 
@@ -97,6 +97,7 @@ import { grove, groveAll, groveOne } from '@5mts/canopy/selectors.js';
 import { onGroveRender, onGroveElement } from '@5mts/canopy/ready.js';
 import { relocate } from '@5mts/canopy/relocate.js';
 import { disclosure } from '@5mts/canopy/disclosure.js';
+import { subnav } from '@5mts/canopy/subnav.js';
 ```
 
 ### ready.js — Grove's answer to DOMContentLoaded
@@ -123,6 +124,14 @@ disclosure(container, {
 ```
 
 Prepends a `<button aria-expanded>` toggle to the container — that's the whole job. JS flips the attribute; **all** visibility is consumer CSS keyed off `[aria-expanded]`. The structural half of that CSS (collapse, overlay, `:has()` reveal, `@supports` gating) ships as the `disclosure-dropdown` / `disclosure-accordion` pattern mixins — see [examples/disclosure.md](examples/disclosure.md). There is deliberately no breakpoint in the API: put the mixin call inside a media query for "dropdown only below N px", or leave it unscoped for "always a dropdown". Idempotent per container — safe inside `onGroveRender`.
+
+### subnav.js — section-nav a11y + current-page marking
+
+```js
+const current = subnav(container, { label: 'Section' });
+```
+
+One small job: navigation landmark semantics (`role`/`aria-label`, plus the Safari list-role restore) and current-page marking (`aria-current="page"` + a class for your CSS, same-origin links only). Returns the current page's link so you can compose — e.g. label a `disclosure()` toggle with it for a dropdown nav. Call it inside `onGroveRender`. All styling is consumer CSS; see [examples/subnav.md](examples/subnav.md) for the full composition.
 
 ## Regenerating selectors.js
 

@@ -13,6 +13,7 @@
     "./ready.js":        "./ready.js",
     "./relocate.js":     "./relocate.js",
     "./disclosure.js":   "./disclosure.js",
+    "./subnav.js":       "./subnav.js",
     "./_selectors.scss": "./_selectors.scss",
     "./_layout.scss":    "./_layout.scss"
   },
@@ -26,6 +27,7 @@
     "ready.js",
     "relocate.js",
     "disclosure.js",
+    "subnav.js",
     "README.md",
     "LICENSE"
   ],

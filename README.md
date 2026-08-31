@@ -65,7 +65,7 @@ The mixin emits exactly the mapped selector(s) — no implicit scope. Wrap with 
 @include audio-player-bottom($reserve-footer: 50px);  // pin player, pad footer
 ```
 
-Also in patterns: the `disclosure-dropdown` / `disclosure-accordion` / `disclosure-glyph` mixins — the structural CSS half of `disclosure.js` (see [examples/disclosure.md](examples/disclosure.md)).
+Also in patterns: the `disclosure-dropdown` / `disclosure-accordion` / `disclosure-glyph` mixins — the structural CSS half of `disclosure.js` (see [examples/disclosure.md](examples/disclosure.md)) — and `relocate-flash-guard`, the CSS half of `relocate.js` (see [examples/relocate.md](examples/relocate.md)).
 
 Nothing emits until you `@include`; importing the core never adds CSS you didn't ask for. Worked recipes live in [examples/](examples/), one feature per file.
 
@@ -109,7 +109,7 @@ On Grove, `DOMContentLoaded` is not enough: custom elements mount *after* it fir
 relocate({ source: grove('podcast-subscribe'), dest: '.my-sidebar-slot', position: 'afterend' });
 ```
 
-Moves every `source` match into the `dest` element, re-applied on every render/navigation. Both are plain CSS selectors — use `grove()` when the target is mapped. Contract: moved nodes are stamped `data-fm-relocated` (key flash-guard styles to it), and destinations gain `fm-relocated`.
+Moves every `source` match into the `dest` element, re-applied on every render/navigation. Both are plain CSS selectors — use `grove()` when the target is mapped. Contract: moved nodes are stamped `data-fm-relocated` (key flash-guard styles to it), and destinations gain `fm-relocated`. For moves that must beat first paint, the `relocate-flash-guard` pattern mixin hides a source until it moves, with a no-JS fallback reveal — see [examples/relocate.md](examples/relocate.md).
 
 ### disclosure.js — dropdown/accordion state
 

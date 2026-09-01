@@ -35,6 +35,22 @@ export function onGroveElement(selector, callback) {
   });
 }
 
+// Run `callback(url)` once per URL — on ready, then again after each
+// client-side navigation (soft nav, back/forward). Keyed on path + query, so
+// hash-only changes don't count. Fires on the FIRST render pass under the new
+// URL, which on a soft nav can be mid-swap — for element work, compose with
+// onGroveElement. Returns an unsubscribe function.
+export function onGroveNavigate(callback) {
+  // single value, not a set: returning to a URL re-runs (its DOM was swapped)
+  let last;
+  return onGroveRender(() => {
+    const url = location.pathname + location.search;
+    if (url === last) return;
+    last = url;
+    callback(url);
+  });
+}
+
 // Start the single shared observer + navigation listeners, lazily on first use
 // so that importing the module has no side effects.
 function start() {
@@ -52,6 +68,16 @@ function start() {
   // events that still fire on forward/back.
   window.addEventListener("pageshow", e => { if (e.persisted) schedule(); });
   window.addEventListener("popstate", schedule);
+  // pushState fires no event; wrap it so URL-keyed callbacks see a navigation
+  // even if the CMS pushes after its last DOM mutation.
+  for (const method of ["pushState", "replaceState"]) {
+    const orig = history[method];
+    history[method] = function (...args) {
+      const result = orig.apply(this, args);
+      schedule();
+      return result;
+    };
+  }
 }
 
 function observeBody() {

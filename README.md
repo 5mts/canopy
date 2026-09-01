@@ -11,7 +11,7 @@ Restyling a Grove means fighting selectors you don't control: variant classes th
 - **The selector map** — unions, composites, and gnarly selectors you shouldn't have to rediscover: `grove('main-with-aside')`, `grove('promo')`, `grove('container-columns')`.
 - **Page-context matching** — `grove-page-is('program', 'The Broadside')` scopes styles to a page's program/section/tags without knowing how Grove exposes them.
 - **Patterns** (opt-in Sass) — `column-list`, `audio-player-bottom`: whole restyle jobs as one `@include`.
-- **JS runtime** — `ready.js` (Grove's answer to DOMContentLoaded), `relocate.js` (move DOM that survives client-side navigation), `disclosure.js` (ARIA dropdown/accordion state), `subnav.js` (section-nav a11y + current-page marking), and the selector map mirrored to JS.
+- **JS runtime** — `ready.js` (Grove's answer to DOMContentLoaded), `relocate.js` (move DOM that survives client-side navigation), `disclosure.js` (ARIA dropdown/accordion state), `subnav.js` (section-nav a11y + current-page marking), `global.js` (opt-in `window.canopy` bridge for inline snippets), and the selector map mirrored to JS.
 
 ## What's deliberately NOT in the box
 
@@ -98,7 +98,7 @@ References resolve at lookup time, so composites track edits to the keys they po
 
 ```js
 import { grove, groveAll, groveOne } from '@5mts/canopy/selectors.js';
-import { onGroveRender, onGroveElement } from '@5mts/canopy/ready.js';
+import { onGroveRender, onGroveElement, onGroveNavigate } from '@5mts/canopy/ready.js';
 import { relocate } from '@5mts/canopy/relocate.js';
 import { disclosure } from '@5mts/canopy/disclosure.js';
 import { subnav } from '@5mts/canopy/subnav.js';
@@ -106,7 +106,17 @@ import { subnav } from '@5mts/canopy/subnav.js';
 
 ### ready.js — Grove's answer to DOMContentLoaded
 
-On Grove, `DOMContentLoaded` is not enough: custom elements mount *after* it fires, and the CMS navigates client-side without firing it again. `onGroveRender(cb)` runs your callback once the DOM is ready and **again on every render and client-side navigation** (bfcache restore + history `popstate`). Because it re-fires, your callback must be idempotent. `onGroveElement(selector, cb)` fires once per matching element as it appears. Both lazily start a single shared `MutationObserver` on first use — importing has no side effects.
+On Grove, `DOMContentLoaded` is not enough: custom elements mount *after* it fires, and the CMS navigates client-side without firing it again. `onGroveRender(cb)` runs your callback once the DOM is ready and **again on every render and client-side navigation** (bfcache restore + history `popstate`). Because it re-fires, your callback must be idempotent. `onGroveElement(selector, cb)` fires once per matching element as it appears. `onGroveNavigate(cb)` runs `cb(url)` once per URL — at load, then again after each client-side navigation (keyed on path + query; hash-only changes don't count; returning to a URL re-fires, since its DOM was swapped). It fires on the first render pass under the new URL, which can be mid-swap — for element work, compose with `onGroveElement`. All three lazily start a single shared `MutationObserver` on first use — importing has no side effects.
+
+### global.js — `window.canopy` for inline snippets
+
+Opt-in bridge exposing the ready.js hooks to code that can't import — JS pasted into a CMS header slot. Bundle it (`import '@5mts/canopy/global.js'` in your theme entry) or load it standalone from a CDN with no theme at all. A tiny generic header stub makes registration load-order-proof, and snippets use one call form:
+
+```js
+canopy.on("groveRender", cb);   // also "groveElement", "groveNavigate"
+```
+
+See [examples/inline-snippets.md](examples/inline-snippets.md) for the site install (stub + tag) and the stub-free portable form.
 
 ### relocate.js — DOM moves that survive navigation
 

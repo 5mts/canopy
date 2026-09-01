@@ -65,7 +65,11 @@ The mixin emits exactly the mapped selector(s) — no implicit scope. Wrap with 
 @include audio-player-bottom($reserve-footer: 50px);  // pin player, pad footer
 ```
 
-Also in patterns: the `disclosure-dropdown` / `disclosure-accordion` / `disclosure-glyph` mixins — the structural CSS half of `disclosure.js` (see [examples/disclosure.md](examples/disclosure.md)) — and `relocate-flash-guard`, the CSS half of `relocate.js` (see [examples/relocate.md](examples/relocate.md)).
+Also in patterns:
+
+- `disclosure-dropdown` / `disclosure-accordion` / `disclosure-glyph` — the structural CSS half of `disclosure.js` ([examples/disclosure.md](examples/disclosure.md))
+- `relocate-flash-guard` — the CSS half of `relocate.js` ([examples/relocate.md](examples/relocate.md))
+- `sidebar-left` — put the page sidebar on the left; knows Grove's own side-by-side breakpoints, with optional control of stacking below the flip point ([examples/sidebar-left.md](examples/sidebar-left.md))
 
 Nothing emits until you `@include`; importing the core never adds CSS you didn't ask for. Worked recipes live in [examples/](examples/), one feature per file.
 

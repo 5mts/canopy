@@ -57,7 +57,7 @@ and *when* it's a dropdown:
 .fm-subnav-toggle { display: none; }   // hidden outside dropdown mode
 
 #sub-nav-menu {
-  a.fm-current { font-weight: bold; }  // your current-page style
+  a.current-link { font-weight: bold; } // the currentClass you passed above
 
   @media (max-width: 767px) {          // when it's a dropdown — your call
     @include disclosure-dropdown('fm-subnav-toggle') {

@@ -146,7 +146,6 @@ $grove-selectors-base: (
   // podcast
   podcast-container: '.PodcastPage-main, .PCEP-content .PCEP-wrapper',
   podcast-aside: '.PodcastPage-aside, .PCEP-aside',
-  podcast-primary: '.PodcastPage-wrapper, .PCEP-main',
   podcast-cover-and-title: '.PodcastPage-top',
   podcast-title: '.PodcastPage-headline',
   podcast-byline: '.PodcastPage-byline',
@@ -157,7 +156,7 @@ $grove-selectors-base: (
   // opaque: '.PodcastLink-provider' doesn't say "subscribe label"
   podcast-subscribe-label: '.PodcastLink-provider',
   podcast-social-bar: '.PodcastPage-social',
-  podcast-cover-art: '.PodcastPage-cover-art',
+  podcast-cover-art: '.PodcastPage-cover-art, .PCEP-parentInfo:has(picture)',
   podcast-icon-headings: '.PodcastActionBar-heading, .PodcastPage-social .SocialBar-heading',
   podcast-hostname: '.PodcastPage-hostName',
   episode-series-header: '[class$="EP-parentInfo"]',
@@ -166,8 +165,7 @@ $grove-selectors-base: (
   // radio show
   radio-container: '.RadioShowPage-main, .RSEP-content .RSEP-wrapper',
   radio-aside:    '.RadioShowPage-aside, .RSEP-aside',
-  radio-primary: '.RadioShowPage-wrapper, .RSEP-main',
-  radio-cover-art: '.RadioShowPage-cover-art',
+  radio-cover-art: '.RadioShowPage-cover-art, .RSEP-parentInfo:has(picture)',
   radio-cover-and-title: '.RadioShowPage-top',
   radio-title: '.RadioShowPage-headline',
   radio-byline: '.RadioShowPage-byline',
@@ -189,9 +187,15 @@ $grove-selectors-base: (
   // so these stay in sync with the keys above without repeating selectors.
   // (No show-subscribe/-subscribe-label: those are podcast-only.)
   show-container: ('podcast-container', 'radio-container'),
+  // The landing/episode split cuts ACROSS the podcast/radio split: Grove's
+  // layout puts each FAMILY side-by-side at a different breakpoint (landing
+  // mains go row at md; episode wrappers only at md-lg), so layout code
+  // needs the container union per family, not per medium.
+  show-landing-container: '.PodcastPage-main, .RadioShowPage-main',
+  episode-container: '.PCEP-content .PCEP-wrapper, .RSEP-content .RSEP-wrapper',
   show-aside: ('podcast-aside', 'radio-aside'),
-  show-primary: ('podcast-primary', 'radio-primary'),
-  show-cover-and-title: ('podcast-cover-and-title', 'radio-cover-and-title'),
+  show-main: '[class$="Page-wrapper"], [class$="EP-main"]',
+  show-cover-and-title: ('podcast-cover-and-title', 'radio-cover-and-title', 'episode-series-header'),
   show-cover-art: ('podcast-cover-art', 'radio-cover-art'),
   show-title: ('podcast-title', 'radio-title'),
   show-byline: ('podcast-byline', 'radio-byline'),

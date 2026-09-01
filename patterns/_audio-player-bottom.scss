@@ -21,7 +21,7 @@
 
   @if $reserve-footer != null {
     @media (min-width: $reserve-at) {
-      @include grove-selector('region-footer') {
+      .Page-footer {
         padding-bottom: $reserve-footer;
       }
     }

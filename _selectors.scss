@@ -51,9 +51,6 @@
 // vendor changes a class name and bump the package version.
 $grove-selectors-base: (
   // Layout containers
-  // kept while a union tail is under evaluation; candidate union:
-  //   '.Page-footer, .Page-footer-content, .Page-footer .Page-footer-branding'
-  region-footer: '.Page-footer',
 
   container-columns: '.FourColumnContainer, .OneColumnContainer, .ThreeColumnContainer, .TwoColumnContainer3070, .TwoColumnContainer5050, .TwoColumnContainer7030',
 

@@ -200,6 +200,8 @@ $grove-selectors-base: (
   show-credits-title: ('podcast-credits-title', 'radio-credits-title'),
   show-social-bar: ('podcast-social-bar', 'radio-social-bar'),
   show-icon-headings: ('podcast-icon-headings', 'radio-icon-headings'),
+  sidebar-headings: 'aside h2, aside h3, aside h4',
+  
   show-hostname: ('podcast-hostname', 'radio-hostname'),
   show-header: ('podcast-header', 'radio-header'),
   episode-meta: '.PCEP-contentInfo, .RSEP-contentInfo',

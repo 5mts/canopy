@@ -1,21 +1,48 @@
-# Inline snippets — `canopy.on()`
+# Inline snippets — `text/canopy` page scripts + `canopy.on()`
 
-`ready.js` is a module, so out of the box only bundled code can use it. For
-JS pasted straight into the CMS — a header/footer HTML slot, a one-off embed —
-`global.js` provides a page-global bridge with one call form:
-
-```js
-canopy.on("groveRender", () => { /* … */ });
-```
+`ready.js` is a module, so out of the box only bundled code can use it.
+`global.js` brings its hooks to JS pasted into the CMS, in three tiers —
+each with exactly the ceremony it needs.
 
 Action names are the module exports minus the `on`: `"groveRender"`,
 `"groveElement"`, `"groveNavigate"` — and any hook the library adds later,
-automatically. An unknown action throws, so typos fail loud.
+automatically. Unknown actions throw, so typos fail loud.
 
-## The site install (once, in the header)
+## Tier 1 — page snippets: `<script type="text/canopy">`
 
-Two tags, stub first. The stub queues `on()` calls made before the module
-loads; it's generic, so it never needs updating when the library grows:
+For a snippet pasted into ONE page's content that should behave like it
+would on a normal website — affect that page, and only that page:
+
+```html
+<script type="text/canopy">
+  canopy.on("groveElement", ".EplB-header", el => {
+    // once per matching element, on this page only
+  });
+</script>
+```
+
+No stub, no load-order concern, no scope options. The unknown `type` makes
+the browser ignore the element; canopy executes it instead — **once each
+time the element appears**, so first loads, soft-nav arrivals, and soft-nav
+returns all behave identically (each run gets a fresh scope). When Grove
+swaps the content away, every registration the run made is torn down. The
+`canopy` inside is provided by the runtime, bound to that page-visit — safe
+to use even in async code within the snippet.
+
+Caveats: the runtime compiles these with `new Function`, so a CSP that
+blocks eval rules them out (use tier 2 with `{scope: "page"}` there); and a
+page snippet only works on sites where `global.js` is installed — on others
+it is inert markup, visible in source.
+
+## Tier 2 — site-wide snippets: header/footer slots
+
+A snippet in a site-wide CMS slot executes once per browsing session, not
+per page — so its registrations are deliberately persistent: they keep
+firing across client-side navigations, which is what "run on every page"
+requires. These use plain `<script>` plus the queue idiom.
+
+**The site install** (once, stub first — it queues `on()` calls made before
+the module loads and is generic, so it never needs updating):
 
 ```html
 <script>
@@ -26,50 +53,37 @@ window.canopy = window.canopy || {
 <script type="module" src="https://cdn.jsdelivr.net/npm/@5mts/canopy@0.4.0/global.js"></script>
 ```
 
-Pin the CDN version; `@latest` means a republish can change every snippet on
-the site at once. On a site whose theme already bundles
+Pin the CDN version; `@latest` means a republish can change every snippet
+on the site at once. On a site whose theme already bundles
 `import '@5mts/canopy/global.js'`, keep the stub and drop the CDN tag —
-loading two copies runs two observers.
+loading two copies runs two observers. (The install also activates tier 1.)
 
-## Usage
+**Usage** — same actions, persistent by default:
 
 ```html
 <script>
-canopy.on("groveRender", () => {
-  // idempotent — re-fires on every render and client-side navigation
-});
-
-canopy.on("groveElement", ".SomeThing", el => {
-  // once per matching element
-});
-
-canopy.on("groveNavigate", url => {
-  // once per URL — hard loads, soft navs, back/forward. Possibly mid-swap
-  // on a soft nav: fine for URL-derived work; for element work use
-  // groveElement instead
-});
+canopy.on("groveRender", () => { /* every page, every render */ });
 </script>
 ```
 
-After the module loads, `canopy.on()` is the live API and returns an
-unsubscribe function (pre-load queued calls can't return one — nothing exists
-yet to unsubscribe from).
+## Tier 3 — programmatic callers
 
-## The portable form (assumes nothing about the site)
+Code with no script tag of its own — tag-manager custom HTML, the browser
+console, registrations made from inside callbacks. Same API as tier 2;
+registrations persist. Two extras:
 
-A snippet that must survive being pasted onto a page *without* the header stub
-can push the wire format directly — `[action, ...args]` tuples:
+- `{scope: "page"}` as a last argument guards a registration to the URL it
+  was made under — a permanent filter, not an unsubscribe, so navigating
+  back re-applies it. (This is also the no-eval fallback for tier 1.)
+- The raw wire form needs no stub at all and queues harmlessly forever if
+  `global.js` never loads:
 
-```js
-(window.canopyActions = window.canopyActions || []).push(["groveRender", () => {
-  // …
-}]);
-```
+  ```js
+  (window.canopyActions = window.canopyActions || []).push(["groveRender", () => { /* … */ }]);
+  ```
 
-This is what the stub does internally; both forms feed the same queue. Without
-`global.js` on the page at all, pushes queue harmlessly forever; a `canopy.on()`
-call without the stub throws `canopy is not defined` — a clear signal the site
-install is missing.
+`canopy.on()` returns an unsubscribe function once the module is loaded
+(queued calls can't return one — nothing exists yet to unsubscribe from).
 
 ## The rules still apply
 
@@ -81,9 +95,6 @@ The bridge changes where callbacks come from, not how they behave:
   re-fires you: an unguarded write loops and hangs the page. Guard every
   mutation with a "did I already do this?" check, or use `groveElement`,
   which tracks handled elements for you.
-- **Header/footer slots, not page content** — a snippet in CMS *content* runs
-  on first load, but client-side navigation won't re-execute it (callbacks it
-  already registered do keep firing).
 
-Callback errors are caught and logged per callback (`[canopy] …`), so a broken
-snippet can't take down the theme's own enhancements.
+Errors are isolated per snippet and per callback (`[canopy] …` in the
+console), so a broken snippet can't take down the theme's own enhancements.

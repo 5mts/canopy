@@ -108,15 +108,17 @@ import { subnav } from '@5mts/canopy/subnav.js';
 
 On Grove, `DOMContentLoaded` is not enough: custom elements mount *after* it fires, and the CMS navigates client-side without firing it again. `onGroveRender(cb)` runs your callback once the DOM is ready and **again on every render and client-side navigation** (bfcache restore + history `popstate`). Because it re-fires, your callback must be idempotent. `onGroveElement(selector, cb)` fires once per matching element as it appears. `onGroveNavigate(cb)` runs `cb(url)` once per URL — at load, then again after each client-side navigation (keyed on path + query; hash-only changes don't count; returning to a URL re-fires, since its DOM was swapped). It fires on the first render pass under the new URL, which can be mid-swap — for element work, compose with `onGroveElement`. All three lazily start a single shared `MutationObserver` on first use — importing has no side effects.
 
-### global.js — `window.canopy` for inline snippets
+### global.js — inline snippets: `text/canopy` page scripts + `window.canopy`
 
-Opt-in bridge exposing the ready.js hooks to code that can't import — JS pasted into a CMS header slot. Bundle it (`import '@5mts/canopy/global.js'` in your theme entry) or load it standalone from a CDN with no theme at all. A tiny generic header stub makes registration load-order-proof, and snippets use one call form:
+Opt-in runtime bringing the ready.js hooks to JS pasted into the CMS. Bundle it (`import '@5mts/canopy/global.js'` in your theme entry) or load it standalone from a CDN with no theme at all. A snippet in one page's content declares itself in its markup and behaves like it would on a normal website — runs each time its page appears, torn down when the page leaves:
 
-```js
-canopy.on("groveRender", cb);   // also "groveElement", "groveNavigate"
+```html
+<script type="text/canopy">
+  canopy.on("groveElement", ".EplB-header", el => { /* this page only */ });
+</script>
 ```
 
-See [examples/inline-snippets.md](examples/inline-snippets.md) for the site install (stub + tag) and the stub-free portable form.
+Site-wide slot snippets use plain `<script>` + `canopy.on("groveRender", cb)` (persistent across navigations — what a once-per-session script needs), made load-order-proof by a tiny generic header stub. See [examples/inline-snippets.md](examples/inline-snippets.md) for the three tiers and the site install.
 
 ### relocate.js — DOM moves that survive navigation
 

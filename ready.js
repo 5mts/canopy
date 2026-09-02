@@ -97,6 +97,7 @@ function schedule() {
 function runAll() {
   if (document.readyState === "loading") return; // wait until the DOM is ready
   for (const callback of [...callbacks]) {
+    if (!callbacks.has(callback)) continue; // unsubscribed earlier in this pass
     try {
       callback();
     } catch (err) {

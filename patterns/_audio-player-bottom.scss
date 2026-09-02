@@ -1,0 +1,29 @@
+// ==========================================================================
+// canopy pattern — audio-player-bottom
+// ==========================================================================
+//
+// Pin Grove's persistent audio player to the bottom of the viewport. The
+// non-obvious half is $reserve-footer: pad the page footer so the fixed
+// player never covers its content — the two rules must stay in sync, which
+// is why they live in one mixin.
+
+@use '../selectors' as *;
+@use '../layout' as *;
+
+@mixin audio-player-bottom($offset: null, $reserve-footer: null, $reserve-at: grove-bp('md')) {
+  @include grove-selector('audio-player') {
+    position: fixed;
+    top: auto;
+    @if $offset != null {
+      bottom: $offset;
+    }
+  }
+
+  @if $reserve-footer != null {
+    @media (min-width: $reserve-at) {
+      .Page-footer {
+        padding-bottom: $reserve-footer;
+      }
+    }
+  }
+}

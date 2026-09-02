@@ -6,7 +6,7 @@ export function grove(key) {
   if (value == null) {
     throw new Error(
       `No Grove selector found for key: '${key}'. ` +
-      `Check $grove-selectors-base or add it via $grove-selectors-extensions.`
+      `Check $grove-selectors-base — or write the raw selector if the class is plainly readable.`
     );
   }
   return value;

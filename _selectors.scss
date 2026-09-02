@@ -1,18 +1,25 @@
 // ==========================================================================
-// understory-styling — Grove Selector Adapter
+// canopy — Grove Selector Knowledge
 // ==========================================================================
 //
-// This file maps raw Grove selectors (brittle class names controlled by the
-// Grove vendor) to semantic keys (stable names your theme code uses). When
-// the Grove vendor renames a class, you update ONE entry here and every
-// theme that depends on this package gets the fix on the next install.
+// A curated map of the Grove selectors that are genuinely hard to know or
+// easy to get wrong. THE KEEP-TEST: an entry earns its place only if it adds
+// information the raw selector lacks —
+//   - unions of many classes            (container-columns, episode-list)
+//   - composites by key reference       (show-*: ('podcast-x', 'radio-x'))
+//   - gnarly logic                      (promo, main-with-aside, eyebrow)
+//   - variant-suffix attribute patterns (promo-title, byline, main-content)
+//   - opaque class decoders             (.PCEP, .PH-persistent-player, .NavI)
+//
+// Plain readable 1:1 classes (.SocialBar, .Image, ps-tabs) are NOT mapped —
+// write those raw in your theme; the class name already says what it is.
 //
 // --------------------------------------------------------------------------
 // HOW TO CONSUME (from a theme repo)
 // --------------------------------------------------------------------------
 //
 // Basic usage:
-//   @use 'pkg:@5mts/understory-styling' as *;
+//   @use 'pkg:@5mts/canopy' as *;
 //
 //   @include grove-selector('promo') {
 //     background: var(--color-surface);
@@ -30,36 +37,37 @@
 //     @include grove-selector('main-content') { … }
 //   }
 //
-// Add per-site selectors that aren't in the shared map:
-//   @use 'pkg:@5mts/understory-styling' with (
-//     $grove-selectors-extensions: (
-//       station-ticker: '.my-site-ticker',
-//       donate-banner:  '.my-site-donate'
-//     )
-//   ) as *;
-//
-// Conflicts resolve in favor of the extension — sites can override a
-// shared entry when the local Grove variant differs.
+// Site-specific selector groupings belong in your own theme variables, not
+// here — see wunc-grove's abstracts/_selectors.scss for the pattern.
 //
 // --------------------------------------------------------------------------
 
 @use 'sass:map';
 @use 'sass:list';
+@use 'sass:meta';
 @use 'sass:string';
-
-// Per-site selectors. Empty by default — sites pass their own map via
-// `with ($grove-selectors-extensions: (...))`.
-$grove-selectors-extensions: () !default;
 
 // Canonical selectors shipped with the package. Update these when the Grove
 // vendor changes a class name and bump the package version.
 $grove-selectors-base: (
   // Layout containers
-  region-main:  'main',
 
-  // page types 
-  page-type-podcast: '.PodcastPage',
-  page-type-podcast-episode: '.PCEP',
+  container-columns: '.FourColumnContainer, .OneColumnContainer, .ThreeColumnContainer, .TwoColumnContainer3070, .TwoColumnContainer5050, .TwoColumnContainer7030',
+
+  // page identity predicates — unions and opaque abbreviations only; readable
+  // single classes (.PodcastPage, .SectionPage, .TagPage, .RadioShowPage) go raw.
+  // NOTE the radio asymmetry (.RadioShowPage-body vs podcast's bare page class)
+  // is as-inspected on Grove — confirm before "fixing".
+  page-is-podcast-episode: '.PCEP',
+  page-is-podcast: '.PodcastPage, .PCEP',
+
+  page-is-archive: '.SectionPage, .TagPage',
+
+  page-is-radio-episode: '.RSEP',
+  page-is-radio: '.RadioShowPage-body, .RSEP',
+
+  page-is-show-any: '.PodcastPage, .RadioShowPage',
+  page-is-episode-any: '.PCEP, .RSEP',
 
   // Content components
   // Excludes promos nested inside other ps-* containers where the base
@@ -69,31 +77,50 @@ $grove-selectors-base: (
   promo-media:    '[class^="Promo"][class$="-media"]',
   promo-content:    '[class^="Promo"][class$="-content"]',
   audio-player:  '.PH-persistent-player',
-  promo-audio-label: '.PromoAE-audio-label',
+  promo-audio-label: '[class^="Promo"][class$="-audio-label"]',
+  button: 'button, button.Button, button.Link',
 
   episode-list:        '.EplB, .EplA',
-  episode-list-header: '.EplB-header, EplA-header',
-  episode-list-title:  '.EplB-header-title, EplA-header-title',
-  episode-list-item:   '.EplB-items-item, EplA-items-item',
+  episode-list-wrapper: '.EplB-items, .EplA-items',
+  episode-list-header: '.EplB-header, .EplA-header',
+  episode-list-title:  '.EplB-header-title, .EplA-header-title',
+  episode-list-item:   '.EplB-items-item, .EplA-items-item',
 
   // Typography
-  promo-titles:   '.PromoXS-title',
-  section-head:  "[id^='section-head']",
+  promo-title:   '[class^="Promo"][class$="-title"]',
+  // Grove suffixes component headers with -header OR -heading interchangeably;
+  // this union covers both so themes never have to know which one a component uses
+  heading: '[class$="-header"], [class$="-heading"]',
+  heading-title: '[class$="-header-title"]',
 
   // Page regions
-  page-above:     '.Page-above',
-  sidebar:        'main > aside',
+  sidebar:        'main > aside, [class$="-wrapper"] > aside',
+  sidebar-content: 'aside > [class$="-aside-content"]',
   main-content:   '[class$="-mainContent"]',
-  main-headline:   'h1',
+  main-headline:   'h1[class$="-headline"]',
   byline:          '[class$="-byline"]',
-  header-metadata:  '[class$="-contentInfo"]',
+  // -contentInfo = the byline/timestamp metadata block under an article head
+  content-meta:  '[class$="-contentInfo"]',
+
   page-lead:      'main [class$="-lead"]',
   breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
-  people-list:    '.ListPeople',
-  people-list-item: '.ListPeople-items-item',
+  // opaque: nothing in '.PromoPeople-content' says "byline"
+  people-byline: '.PromoPeople-content',
+  article-body: 'article [class$="-articleBody"]',
+  article-subhead: 'article h2[class$="-subheadline"]',
+  post-article-tags: '[class$="-tags"]',
+  post-article-bio: '[class$="-bottomByline"]',
+  page-description: '[class$="-pageDescription-content"]',
+  series-banner: '.SeriesBanner',
 
-  // modules
-  rich-text: '.RichTextModule',
+  page-container: '[class$="Page-wrapper"]',
+  page-header: '[class$="Page-head"]',
+  page-head-text: '[class$="Page-head-text"]',
+
+
+  // main without an accompanying aside element
+  main-without-aside: 'main:not(:has(~ aside, aside), aside ~ main)',
+  main-with-aside: 'main:has(~ aside, aside), aside ~ main',
 
   // Sidebar slot — destination for JS-relocated content (e.g. metadata links).
   // First-pass selector covering known Grove side-region variants; refine after
@@ -105,18 +132,16 @@ $grove-selectors-base: (
   metadata-relocatable-links: '[class$="-contentInfo"] a',
 
   content-image:   'figure .Image, .PromoXS-media .Image',
-  content-figure-content: '.Figure-content',
-  content-figure-caption: '.Figure-caption, .CarouselSlide-infoDescription',
-  content-figure-credit-container: '.Figure-credit-container',
-  content-figure-credit: '.Figure-credit, .CarouselSlide-infoAttribution',
+  caption: '.Figure-caption, .CarouselSlide-infoDescription, .Figure-credit, .CarouselSlide-infoAttribution, [class$="-credit-container"] [class$="-credit"], [class$="-credit-container"] [class$="-divider"], [class$="-credit-container"] [class$="-source"]',
+  title-text: '[class$="-title"]',
+  description: '[class$="-description"]',
 
   // content types
   news-story:     '.ArtP:not(.aside)',
 
   // podcast
-  podcast-container: '.PodcastPage-main, .PCEP-wrapper',
+  podcast-container: '.PodcastPage-main, .PCEP-content .PCEP-wrapper',
   podcast-aside: '.PodcastPage-aside, .PCEP-aside',
-  podcast-primary: '.PodcastPage-wrapper, .PCEP-main',
   podcast-cover-and-title: '.PodcastPage-top',
   podcast-title: '.PodcastPage-headline',
   podcast-byline: '.PodcastPage-byline',
@@ -124,16 +149,64 @@ $grove-selectors-base: (
   podcast-credits: '.ListPeople',
   podcast-credits-title: '.ListPeople-header-title',
   podcast-subscribe: '.PodcastActionBar',
+  // opaque: '.PodcastLink-provider' doesn't say "subscribe label"
   podcast-subscribe-label: '.PodcastLink-provider',
-  podcast-link-inner: '.PodcastLink',
   podcast-social-bar: '.PodcastPage-social',
-  podcast-cover-art: '.PodcastPage-cover-art',
+  podcast-cover-art: '.PodcastPage-cover-art, .PCEP-parentInfo:has(picture)',
   podcast-icon-headings: '.PodcastActionBar-heading, .PodcastPage-social .SocialBar-heading',
-  podcast-hostname: ' .PodcastPage-hostName',
-  episode-series-header: '.PCEP-parentInfo',
+  podcast-hostname: '.PodcastPage-hostName',
+  episode-series-header: '[class$="EP-parentInfo"]',
+  podcast-header: '.PodcastPage-info',
 
-  // social links
-  social-bar: '.SocialBar',
+  // radio show
+  radio-container: '.RadioShowPage-main, .RSEP-content .RSEP-wrapper',
+  radio-aside:    '.RadioShowPage-aside, .RSEP-aside',
+  radio-cover-art: '.RadioShowPage-cover-art, .RSEP-parentInfo:has(picture)',
+  radio-cover-and-title: '.RadioShowPage-top',
+  radio-title: '.RadioShowPage-headline',
+  radio-byline: '.RadioShowPage-byline',
+  radio-description: '.RadioShowPage-byline + *',
+  radio-credits: '.ListPeople',
+  radio-credits-title: '.ListPeople-header-title',
+  radio-social-bar: '.RadioShowPage-social',
+  // Only the social-heading half of podcast-icon-headings — radio has no
+  // podcast-style subscribe action bar (.PodcastActionBar), so that half is omitted.
+  radio-icon-headings: '.RadioShowPage-social .SocialBar-heading',
+  radio-hostname: '.RadioShowPage-hostName',
+  radio-header: '.RadioShowPage-info',
+
+  // combined shows — union of the podcast-* and radio-* keys above. Because
+  // those underlying keys already span both show pages (.PodcastPage /
+  // .RadioShowPage) and episode pages (.PCEP / .RSEP), one show-* key styles
+  // the component across both media and both page types in a single rule.
+  // A list of keys is a composite: grove() resolves each entry by reference,
+  // so these stay in sync with the keys above without repeating selectors.
+  // (No show-subscribe/-subscribe-label: those are podcast-only.)
+  show-container: ('podcast-container', 'radio-container'),
+  // The landing/episode split cuts ACROSS the podcast/radio split: Grove's
+  // layout puts each FAMILY side-by-side at a different breakpoint (landing
+  // mains go row at md; episode wrappers only at md-lg), so layout code
+  // needs the container union per family, not per medium.
+  show-landing-container: '.PodcastPage-main, .RadioShowPage-main',
+  episode-container: '.PCEP-content .PCEP-wrapper, .RSEP-content .RSEP-wrapper',
+  show-aside: ('podcast-aside', 'radio-aside'),
+  show-main: '[class$="Page-wrapper"], [class$="EP-main"]',
+  show-cover-and-title: ('podcast-cover-and-title', 'radio-cover-and-title', 'episode-series-header'),
+  show-cover-art: ('podcast-cover-art', 'radio-cover-art'),
+  show-title: ('podcast-title', 'radio-title'),
+  show-byline: ('podcast-byline', 'radio-byline'),
+  show-description: ('podcast-description', 'radio-description'),
+  show-credits: ('podcast-credits', 'radio-credits'),
+  show-credits-title: ('podcast-credits-title', 'radio-credits-title'),
+  show-social-bar: ('podcast-social-bar', 'radio-social-bar'),
+  show-icon-headings: ('podcast-icon-headings', 'radio-icon-headings'),
+  sidebar-headings: 'aside h2, aside h3, aside h4',
+  
+  show-hostname: ('podcast-hostname', 'radio-hostname'),
+  show-header: ('podcast-header', 'radio-header'),
+  episode-meta: '.PCEP-contentInfo, .RSEP-contentInfo',
+  episode-player: '.PCEP-audioPlayer, .RSEP-audioPlayer',
+  show-schedule-info: '.RadioShowPage-mediaSchedule, .PodcastPage-podcastSchedule',
 
   // News tile
   news-tile:     'ps-promo[data-content-type="news-story"]',
@@ -142,48 +215,60 @@ $grove-selectors-base: (
   // promo titles to label the category. The `:has(> a)` filter excludes
   // similarly-named utility classes that don't wrap a link.
   eyebrow:       '[class$="-category"]:has(> a), [class$="-breadcrumbs"]:has(a)',
-  author-info:   '[class$="-authorName"]',
+  author-info:   '[class$="-authorName"], [class$="-contributors"], [class$="-hostName"]',
+  author-position: '[class$="-authorTitle"]',
   timestamp:     '[class$="-timestamp"], [class$="-timestamp"] > *',
+  category: '[class$="-category"]',
 
-  // Tabs — Grove emits a `<ps-tabs>` element wrapping a `.Tabs-tabs` list of
-  // tab buttons. Active state is signalled via `[data-active="true"]`, with
-  // a `.Tabs-tabs-tab` class as an alternative hook some Grove variants use.
-  tabs:          'ps-tabs',
-  tabs-list:     '.Tabs-tabs',
-  tabs-header:   '.Tabs-header',
+  // Tabs — active state is signalled via `[data-active="true"]`, with a
+  // `.Tabs-tabs-tab` class as an alternative hook some Grove variants use.
   tab:           'ps-tabs .Tabs-tabs-tab',
   tab-active:    'ps-tabs [role="tab"][data-active="true"], ps-tabs .Tabs-tabs-tab[data-active="true"]',
-  tabs-title:    'ps-tabs .Tabs-header-title',
-  tabs-content:  'ps-tabs .Tabs-content',
 
-  // Action bar — share/social/save links rendered as a row of icon buttons
-  action-bar:      '.ActionBar',
-  action-bar-item: '.ActionBar-items-item',
-  action-link:     '.ActionLink',
+  // Action bar item filtered to social-service links only
   social-action:   '.ActionLink[data-social-service]',
 
-  // Navigation
+  // Navigation — opaque abbreviations (.PH-*, .NavI)
   nav-bar:           '.PH-nav-bar',
   nav-item:          '.NavI',
   nav-item-list:     '.NavI-items',
   nav-item-text:     '.NavI-text',
-  nav-link:          '.NavLink',
   dropdown-nav-items: '.DropdownNavigation-items, .NavI .NavLink',
 
   // Streaming / players
-  stream-container:        'ps-stream',
-  stream-pill:             '.StreamPill',
   stream-pill-highlighted: '.StreamPill:hover, [playing] .StreamPill',
 );
 
-$grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
+$grove-selectors: $grove-selectors-base;
 
 // Look up a Grove selector by its semantic key. Returns the raw selector.
 // Errors loudly if the key doesn't exist so typos fail at compile time.
-@function grove($key) {
+//
+// A map value may also be a list of other keys — a composite defined by
+// reference, e.g. `show-container: ('podcast-container', 'radio-container')`.
+// References resolve here at lookup time, so composites live inline in the
+// map next to ordinary entries (before or after the keys they point at) and
+// track any future edits to those keys. The JS generator only emits
+// quoted-string entries, so composites never appear in selectors.js.
+@function grove($key, $seen: ()) {
+  @if list.index($seen, $key) {
+    @error "Circular Grove selector reference: #{list.append($seen, $key, comma)}";
+  }
   $value: map.get($grove-selectors, $key);
   @if $value == null {
-    @error "No Grove selector found for key: '#{$key}'. Check $grove-selectors-base or add it via $grove-selectors-extensions.";
+    @error "No Grove selector found for key: '#{$key}'. Check $grove-selectors-base — or write the raw selector if the class is plainly readable.";
+  }
+  @if meta.type-of($value) == 'list' {
+    $result: ();
+    @each $ref in $value {
+      $resolved: grove($ref, list.append($seen, $key));
+      // dedupe: composite members may resolve to the same selector
+      // (e.g. podcast-credits and radio-credits are both '.ListPeople')
+      @if not list.index($result, $resolved) {
+        $result: list.append($result, $resolved, comma);
+      }
+    }
+    @return $result;
   }
   @return $value;
 }
@@ -197,8 +282,8 @@ $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
 //   @include grove-selector('promo') { … }
 //   → ps-promo[…] { … }
 //
-//   @include grove-selector(('news-tile', 'tabs')) { … }
-//   → ps-promo[…], ps-tabs { … }
+//   @include grove-selector(('news-tile', 'tab')) { … }
+//   → ps-promo[data-content-type="news-story"], ps-tabs .Tabs-tabs-tab { … }
 //
 //   body.has-player {
 //     @include grove-selector('audio-player') { … }
@@ -234,11 +319,34 @@ $grove-selectors: map.merge($grove-selectors-base, $grove-selectors-extensions);
   @return $result;
 }
 
+// Match one `"key" : "value"` pair in the page-context metadata (currently a
+// <meta name="brightspot-dataLayer"> JSON blob — the mechanism is this
+// function's secret). Known keys: `program`, `category` (= Grove Section),
+// `keywords` (= Grove Tags), `pageType`, `series`.
+@function grove-page-match($key, $value) {
+  @return "meta[name='brightspot-dataLayer'][content*='\"#{$key}\" : \"#{$value}\"']";
+}
+
+// An `html:has(...)` selector that's true when the page's context `$key`
+// equals `$value`. Pass a list of values to match ANY of them — kept as one
+// :has() so it stays valid inline before a combinator: `#{$sel} .foo { … }`.
+//
+// Usage:
+//   $program-is-broadside: grove-page-is('program', 'The Broadside');
+//   $program-is-any: grove-page-is('program', ('The Broadside', 'WUNC Politics'));
+@function grove-page-is($key, $values) {
+  $matches: ();
+  @each $value in $values {
+    $matches: list.append($matches, grove-page-match($key, $value), comma);
+  }
+  @return "html:has(#{$matches})";
+}
+
 
 // Content types and header elements
 $grove-content-types: 'ArtP', 'RSEP' !default;
 $grove-news-story-type: 'ArtP';
-$grove-head-suffixes: '-breadcrumbs-wrapper', '-headline', '-contentInfo', '-audioPlayer', 'parentInfo' !default;
+$grove-head-suffixes: '-breadcrumbs-wrapper', '-headline', '-contentInfo', '-audioPlayer', '-parentInfo' !default;
 
 // List components — Grove emits per-variant list wrappers (`.ListA`, `.ListB`,
 // …, `.ListH`) whose child classes differ only by the variant letter. The
@@ -247,6 +355,13 @@ $grove-head-suffixes: '-breadcrumbs-wrapper', '-headline', '-contentInfo', '-aud
 $grove-list-prefix:  'List' !default;
 $grove-list-letters: A B C D E F G H !default;
 
+// Episode lists reuse the same `-header` / `-header-title` sub-element
+// structure as the generic lists. Only `.EplA` is folded into `list-header` /
+// `list-header-title` below — `.EplB` is deliberately excluded (the theme
+// treats it as a non-tile list). Add letters here to fold more variants in.
+$grove-epl-prefix:  'Epl' !default;
+$grove-epl-letters: A !default;
+
 // Promote the common list sub-elements to named selector keys, so themes can
 // target the whole `ListA…ListH` set with a single `grove-selector('list-header')`
 // call instead of repeating the grove-variants() expansion at every call site.
@@ -254,7 +369,25 @@ $grove-list-letters: A B C D E F G H !default;
 // $grove-selectors-base, so the letter set stays single-sourced in
 // $grove-list-letters and these style-only hooks don't emit JS entries in
 // selectors.js.
+// These values are literal selectors, not key references, so they must be
+// stored as STRINGS. grove() resolves any *list*-valued entry as a composite
+// of other keys (see show-container etc. above); a bare list of `.ListA-header`
+// selectors would be sent back through grove() as keys and throw
+// "No Grove selector found". Interpolating the comma-list into a quoted string
+// keeps them as plain selectors, matching every other multi-selector entry.
+$_list-header: list.join(
+  grove-variants($grove-list-prefix, '-header', $grove-list-letters),
+  grove-variants($grove-epl-prefix,  '-header', $grove-epl-letters),
+  comma
+);
+$_list-header-title: list.join(
+  grove-variants($grove-list-prefix, '-header-title', $grove-list-letters),
+  grove-variants($grove-epl-prefix,  '-header-title', $grove-epl-letters),
+  comma
+);
 $grove-selectors: map.merge($grove-selectors, (
-  list-header:       grove-variants($grove-list-prefix, '-header', $grove-list-letters),
-  list-header-title: grove-variants($grove-list-prefix, '-header-title', $grove-list-letters),
+  list-header:       '#{$_list-header}',
+  list-header-title: '#{$_list-header-title}',
+
+  news-story-head-meta: "#{grove-variants($grove-news-story-type, '', $grove-head-suffixes)}, #{grove('series-banner')}",
 ));

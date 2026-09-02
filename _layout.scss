@@ -1,5 +1,5 @@
 // ==========================================================================
-// understory-styling — Grove Layout Values
+// canopy — Grove Layout Values
 // ==========================================================================
 //
 // Mirrors of Grove's hard-coded layout values (breakpoints, and any future
@@ -11,7 +11,7 @@
 // media query conditions.
 //
 // Usage:
-//   @use 'pkg:@5mts/understory-styling' as *;
+//   @use 'pkg:@5mts/canopy' as *;
 //
 //   $bp-md: grove-bp('md');
 //
@@ -24,16 +24,16 @@
 // Grove-controlled and don't belong here.
 $grove-breakpoints-base: (
   md: 768px,
+  md-lg: 1024px,
   lg: 1240px,
 ) !default;
 
-$grove-breakpoints-extensions: () !default;
-$grove-breakpoints: map.merge($grove-breakpoints-base, $grove-breakpoints-extensions);
+$grove-breakpoints: $grove-breakpoints-base;
 
 @function grove-bp($key) {
   $value: map.get($grove-breakpoints, $key);
   @if $value == null {
-    @error "No Grove breakpoint found for key: '#{$key}'. Check $grove-breakpoints-base or add it via $grove-breakpoints-extensions.";
+    @error "No Grove breakpoint found for key: '#{$key}'. Check $grove-breakpoints-base — theme-specific breakpoints belong in your own tokens.";
   }
   @return $value;
 }

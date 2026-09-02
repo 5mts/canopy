@@ -1,0 +1,66 @@
+// ==========================================================================
+// canopy pattern — relocate-flash-guard
+// ==========================================================================
+//
+// The CSS half of relocate.js: hide a relocation source until JS moves it
+// (the move stamps `data-fm-relocated` on the node — see the contract in
+// relocate.js). Include inside the source's own rule:
+//
+//   @include grove-selector('podcast-subscribe') {
+//     @include relocate-flash-guard($dest: '.my-sidebar-slot');
+//   }
+//
+// Why each piece exists:
+//   - keyed to the per-element marker, NOT a global "js-ready" flag: DOM the
+//     CMS swaps in on client-side navigation starts hidden again and only
+//     reveals once relocated (a global flag never resets across a nav).
+//   - $dest gates the hide behind body:has($dest): on a page with no
+//     destination the source is never hidden — there's nowhere to move TO.
+//   - the delayed reveal animation is the no-JS fallback: if the script
+//     never runs, content reappears after $fallback-delay instead of being
+//     lost. Reduced motion keeps the recovery (it's content recovery, not
+//     decoration) but makes it a cut instead of a tween.
+
+$-flash-guard-keyframes-emitted: false;
+
+@mixin -flash-guard-hidden($duration, $delay, $shift) {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY($shift);
+  // enables the height: 0 → auto tween; set here, not :root — it only needs
+  // to cover this element's own animation
+  interpolate-size: allow-keywords;
+  animation: fm-relocate-reveal $duration $delay forwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none;
+    animation-duration: 0s;
+  }
+}
+
+@mixin relocate-flash-guard($dest: null, $fallback-delay: 5s, $duration: 0.4s, $shift: -0.5rem) {
+  // shared keyframes, emitted once per compilation on first use
+  @if not $-flash-guard-keyframes-emitted {
+    $-flash-guard-keyframes-emitted: true !global;
+    @at-root {
+      @keyframes fm-relocate-reveal {
+        to {
+          height: auto;
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+  }
+
+  @if $dest {
+    body:has(#{$dest}) &:not([data-fm-relocated]) {
+      @include -flash-guard-hidden($duration, $fallback-delay, $shift);
+    }
+  } @else {
+    &:not([data-fm-relocated]) {
+      @include -flash-guard-hidden($duration, $fallback-delay, $shift);
+    }
+  }
+}

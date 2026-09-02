@@ -1,156 +1,171 @@
-# @5mts/understory-styling
+# @5mts/canopy
 
-A Sass adapter for NPR Grove. Instead of hard-coding class names across your theme files, consume them through this package's semantic map. When Grove renames a class, you update this package — not your theme.
+Encoded DOM knowledge and opt-in restyling recipes for NPR Grove sites.
+
+Restyling a Grove means fighting selectors you don't control: variant classes that differ by one letter, page context buried in a meta tag, an audio player with an unguessable class name, layouts that flip depending on whether an aside exists. Canopy packages the selectors that are genuinely hard to know — and working recipes for the restyles everyone does — so your theme starts from solved problems.
 
 > Unaffiliated with any Grove vendor. Published by Five Mountains.
+
+## What's in the box
+
+- **The selector map** — unions, composites, and gnarly selectors you shouldn't have to rediscover: `grove('main-with-aside')`, `grove('promo')`, `grove('container-columns')`.
+- **Page-context matching** — `grove-page-is('program', 'The Broadside')` scopes styles to a page's program/section/tags without knowing how Grove exposes them.
+- **Patterns** (opt-in Sass) — `column-list`, `audio-player-bottom`: whole restyle jobs as one `@include`.
+- **JS runtime** — `ready.js` (Grove's answer to DOMContentLoaded), `relocate.js` (move DOM that survives client-side navigation), `disclosure.js` (ARIA dropdown/accordion state), `subnav.js` (section-nav a11y + current-page marking), `global.js` (opt-in `window.canopy` bridge for inline snippets), and the selector map mirrored to JS.
+
+## What's deliberately NOT in the box
+
+Plain readable 1:1 selectors. If Grove calls it `.SocialBar`, write `.SocialBar` — a `grove('social-bar')` key would only obfuscate what you see in the inspector. **The keep-test: a map entry earns its place only if it adds information the raw selector lacks.** The map holds:
+
+| Category | Example |
+|---|---|
+| Unions | `container-columns` → six container classes |
+| Composites by reference | `show-container` → `('podcast-container', 'radio-container')` |
+| Gnarly logic | `main-with-aside` → `main:has(~ aside, aside), aside ~ main` |
+| Variant-suffix patterns | `promo-title` → `[class^="Promo"][class$="-title"]` |
+| Opaque decoders | `audio-player` → `.PH-persistent-player` |
+
+Raw selectors in your theme are normal, not a smell.
 
 ## Install
 
 ```bash
-npm install @5mts/understory-styling
+npm install @5mts/canopy
 ```
 
-Requires **Dart Sass 1.78+** (for `pkg:` specifier support).
+Requires **Dart Sass 1.78+** run with `--pkg-importer=node` (for `pkg:` specifiers).
 
-## Usage
+## Sass usage
 
 ```scss
-@use 'pkg:@5mts/understory-styling' as *;
+@use 'pkg:@5mts/canopy' as *;            // core: map + functions, zero CSS output
 
 @include grove-selector('promo') {
   background: var(--color-surface);
-  padding: 1rem;
 }
 
-@include grove-selector('audio-player') {
-  position: fixed;
-  bottom: 0;
+// The canonical example — aside-aware list density, pure library keys:
+@include grove-selector('page-is-show-any') {
+  @include grove-selector('main-without-aside') { /* 3-col layouts */ }
+  @include grove-selector('main-with-aside')    { /* 2-col layouts */ }
 }
 ```
 
-Compiles to:
+The mixin emits exactly the mapped selector(s) — no implicit scope. Wrap with normal Sass nesting when you need an ancestor.
 
-```css
-body .ps-promo { background: var(--color-surface); padding: 1rem; }
-body .PH-persistent-player { position: fixed; bottom: 0; }
-```
-
-## Configuration
-
-### Override the root scope
-
-Every selector is prefixed with `body` by default. Override at import time:
+### Patterns (opt-in, CSS-emitting)
 
 ```scss
-@use 'pkg:@5mts/understory-styling' with (
-  $general-scope: 'body.theme-v2'
-) as *;
+@use 'pkg:@5mts/canopy/patterns' as *;
+
+.ListE-items {
+  @include three-column-list;              // responsive promo tiles
+}
+
+@include audio-player-bottom($reserve-footer: 50px);  // pin player, pad footer
 ```
 
-### Apply a body-class modifier per call
+Also in patterns:
+
+- `disclosure-dropdown` / `disclosure-accordion` / `disclosure-glyph` — the structural CSS half of `disclosure.js` ([examples/disclosure.md](examples/disclosure.md))
+- `relocate-flash-guard` — the CSS half of `relocate.js` ([examples/relocate.md](examples/relocate.md))
+- `sidebar-left` — put the page sidebar on the left; knows Grove's own side-by-side breakpoints, with optional control of stacking below the flip point ([examples/sidebar-left.md](examples/sidebar-left.md))
+
+Nothing emits until you `@include`; importing the core never adds CSS you didn't ask for. Worked recipes live in [examples/](examples/), one feature per file.
+
+### Page context
 
 ```scss
-@include grove-selector('audio-player', '.has-player') {
-  bottom: 80px;
-}
-// → body.has-player .PH-persistent-player { ... }
+$program-is-broadside: grove-page-is('program', 'The Broadside');
+
+#{$program-is-broadside} .my-thing { color: teal; }
 ```
 
-The modifier can chain multiple classes: `'.has-player.is-playing'`.
+`grove-page-is($key, $values)` matches the page's context metadata; pass a list of values to match any of them. Known keys: `program`, `category` (= Grove Section), `keywords` (= Grove Tags), `pageType`, `series`. How the page exposes that metadata is canopy's secret — if Grove changes it, your theme doesn't.
 
-### Extend with site-specific selectors
+### Composites by reference
 
-If your Grove has per-site additions that aren't in the shared map:
+A map value may be a list of other keys — the blessed way to name a grouping:
 
 ```scss
-@use 'pkg:@5mts/understory-styling' with (
-  $grove-selectors-extensions: (
-    station-ticker: '.my-site-ticker',
-    donate-banner:  '.my-site-donate'
-  )
-) as *;
-
-@include grove-selector('station-ticker') {
-  background: gold;
-}
+// in the shared map:
+show-title: ('podcast-title', 'radio-title'),
 ```
 
-Extensions override base entries on key collision — useful when a site runs a Grove variant that renames a shared selector.
-
-## API
-
-| Name | Type | Purpose |
-|---|---|---|
-| `$general-scope` | variable (default `'body'`) | Root scope prepended to every selector |
-| `$grove-selectors-base` | map | Canonical selectors shipped with the package |
-| `$grove-selectors-extensions` | map (default `()`) | Per-site additions merged in at import time |
-| `$grove-selectors` | map | Final merged map (base + extensions) |
-| `grove($key)` | function | Look up a raw selector by semantic key |
-| `grove-selector($key, $body-modifier: '')` | mixin | Apply styles to the selector, auto-scoped |
+References resolve at lookup time, so composites track edits to the keys they point at. Name your *site-specific* groupings the same way, in your own variables file — they don't belong in the shared map.
 
 ## JavaScript usage
 
-The same surface area is exposed as a generated ES module so JS and CSS reference one source of truth:
-
 ```js
-import { grove, groveAll, groveOne, groveVariants } from '@5mts/understory-styling/selectors.js';
-
-document.querySelectorAll(grove('audio-player'));
-groveAll(['promo', 'news-tile']).forEach(el => { /* … */ });
+import { grove, groveAll, groveOne } from '@5mts/canopy/selectors.js';
+import { onGroveRender, onGroveElement, onGroveNavigate } from '@5mts/canopy/ready.js';
+import { relocate } from '@5mts/canopy/relocate.js';
+import { disclosure } from '@5mts/canopy/disclosure.js';
+import { subnav } from '@5mts/canopy/subnav.js';
 ```
 
-Exports:
+### ready.js — Grove's answer to DOMContentLoaded
 
-| Name | Shape | SCSS counterpart |
-|---|---|---|
-| `groveSelectors` | frozen object | `$grove-selectors-base` |
-| `groveContentTypes` | frozen string array | `$grove-content-types` |
-| `groveNewsStoryType` | string | `$grove-news-story-type` |
-| `groveHeadSuffixes` | frozen string array | `$grove-head-suffixes` |
-| `grove(key)` | function | `grove($key)` Sass function |
-| `groveAll(keys, root?)` | function (returns Array) | `grove-selector($keys)` mixin |
-| `groveOne(key, root?)` | function (returns Element) | single-key form |
-| `groveVariants(prefix, suffix, letters)` | function (returns string array) | `grove-variants(...)` Sass function |
-| `isNewsStory(el)` | function (returns boolean) | content-type check |
+On Grove, `DOMContentLoaded` is not enough: custom elements mount *after* it fires, and the CMS navigates client-side without firing it again. `onGroveRender(cb)` runs your callback once the DOM is ready and **again on every render and client-side navigation** (bfcache restore + history `popstate`). Because it re-fires, your callback must be idempotent. `onGroveElement(selector, cb)` fires once per matching element as it appears. `onGroveNavigate(cb)` runs `cb(url)` once per URL — at load, then again after each client-side navigation (keyed on path + query; hash-only changes don't count; returning to a URL re-fires, since its DOM was swapped). It fires on the first render pass under the new URL, which can be mid-swap — for element work, compose with `onGroveElement`. All three lazily start a single shared `MutationObserver` on first use — importing has no side effects.
 
-`selectors.js` is generated from `_selectors.scss` — never edit it directly. After editing the SCSS map, run:
+### global.js — inline snippets: `text/canopy` page scripts + `window.canopy`
+
+Opt-in runtime bringing the ready.js hooks to JS pasted into the CMS. Bundle it (`import '@5mts/canopy/global.js'` in your theme entry) or load it standalone from a CDN with no theme at all. A snippet in one page's content declares itself in its markup and behaves like it would on a normal website — runs each time its page appears, torn down when the page leaves:
+
+```html
+<script type="text/canopy">
+  canopy.on("groveElement", ".EplB-header", el => { /* this page only */ });
+</script>
+```
+
+Site-wide slot snippets use plain `<script>` + `canopy.on("groveRender", cb)` (persistent across navigations — what a once-per-session script needs), made load-order-proof by a tiny generic header stub. See [examples/inline-snippets.md](examples/inline-snippets.md) for the three tiers and the site install.
+
+### relocate.js — DOM moves that survive navigation
+
+```js
+relocate({ source: grove('podcast-subscribe'), dest: '.my-sidebar-slot', position: 'afterend' });
+```
+
+Moves every `source` match into the `dest` element, re-applied on every render/navigation. Both are plain CSS selectors — use `grove()` when the target is mapped. Contract: moved nodes are stamped `data-fm-relocated` (key flash-guard styles to it), and destinations gain `fm-relocated`. For moves that must beat first paint, the `relocate-flash-guard` pattern mixin hides a source until it moves, with a no-JS fallback reveal — see [examples/relocate.md](examples/relocate.md).
+
+### disclosure.js — dropdown/accordion state
+
+```js
+disclosure(container, {
+  label: 'Menu',              // toggle text (updated on re-calls)
+  toggleClass: 'my-toggle',
+  panel: 'ul',                // optional aria-controls target
+  closeOnOutsideClick: true,
+});
+```
+
+Prepends a `<button aria-expanded>` toggle to the container — that's the whole job. JS flips the attribute; **all** visibility is consumer CSS keyed off `[aria-expanded]`. The structural half of that CSS (collapse, overlay, `:has()` reveal, `@supports` gating) ships as the `disclosure-dropdown` / `disclosure-accordion` pattern mixins — see [examples/disclosure.md](examples/disclosure.md). There is deliberately no breakpoint in the API: put the mixin call inside a media query for "dropdown only below N px", or leave it unscoped for "always a dropdown". Idempotent per container — safe inside `onGroveRender`.
+
+### subnav.js — section-nav a11y + current-page marking
+
+```js
+const current = subnav(container, { label: 'Section' });
+```
+
+One small job: navigation landmark semantics (`role`/`aria-label`, plus the Safari list-role restore) and current-page marking (`aria-current="page"` + a class for your CSS, same-origin links only). Returns the current page's link so you can compose — e.g. label a `disclosure()` toggle with it for a dropdown nav. Call it inside `onGroveRender`. All styling is consumer CSS; see [examples/subnav.md](examples/subnav.md) for the full composition.
+
+## Regenerating selectors.js
+
+`selectors.js` is generated from `_selectors.scss` — never edit it directly. After editing the SCSS map:
 
 ```bash
 npm run build:selectors
 ```
 
-`prepublishOnly` regenerates automatically before publish, so the npm tarball always reflects the SCSS source.
-
-## Grove readiness — `ready.js`
-
-On Grove, `DOMContentLoaded` is not enough: custom elements mount *after* it fires, and the CMS navigates client-side without firing it again. `ready.js` is Grove's version of that signal — it runs your code once the DOM is ready and **again on every render and every client-side navigation** (bfcache restore + history `popstate`). Because it re-fires, your callback must be idempotent.
-
-```js
-import { onGroveRender, onGroveElement } from '@5mts/understory-styling/ready.js';
-import { grove } from '@5mts/understory-styling/selectors.js';
-
-// Runs on ready, then on every render/navigation — reconcile, don't assume once.
-onGroveRender(() => { /* make the DOM match what you want, idempotently */ });
-
-// Convenience: fire once per matching element as it appears (including elements
-// a soft navigation swaps in).
-onGroveElement(grove('stream-pill'), el => el.classList.add('fm-tagged'));
-```
-
-| Export | Signature | Behaviour |
-|---|---|---|
-| `onGroveRender` | `(callback) → unsubscribe` | Runs `callback` on ready, then on every coalesced DOM mutation and client-side navigation. Callback must be idempotent. |
-| `onGroveElement` | `(selector, callback) → unsubscribe` | Runs `callback(el)` once per newly-appeared matching element. Built on `onGroveRender`. |
-
-Both lazily start a single shared `MutationObserver` on first use — importing the module has no side effects.
+`prepublishOnly` regenerates automatically, so the npm tarball always reflects the SCSS source.
 
 ## Versioning
 
 - **Patch** (0.x.Y): internal refactor, documentation, no selector changes
-- **Minor** (0.X.y): new semantic keys added (backward compatible) — applies to SCSS map and generated `selectors.js` together
-- **Major** (X.y.z): existing keys renamed or removed, or selectors changed in ways that may alter theme output — applies to both layers together
+- **Minor** (0.X.y): new keys, patterns, or JS capabilities (backward compatible)
+- **Major** (X.y.z): existing keys renamed or removed, or selectors changed in ways that may alter theme output
 
-Consumers pin to a minor range (`^0.1.0`) to get additions and fixes automatically, and review before accepting a major bump.
+Consumers pin to a minor range (`^0.3.0`) to get additions and fixes automatically, and review before accepting a major bump. Because the map only holds hard-won selectors, additions are deliberate — ask for a key when a selector genuinely passes the keep-test.
 
 ## License
 

@@ -1,0 +1,85 @@
+// ==========================================================================
+// canopy pattern — column-list
+// ==========================================================================
+//
+// Force a Grove promo list into responsive flex-tile columns: always two
+// columns above $two-col-at; expands to three above $three-col-at unless
+// $columns caps it at two (a 2-vs-3 switch, not an arbitrary count). Also
+// reflows each promo tile for the tile form (hides the byline, reorders
+// audio-label → title → content, resets media margins).
+//
+// Prefer the named shortcuts (two-column-list / three-column-list) in theme
+// files — they read more clearly than a bare number.
+
+@use '../selectors' as *;
+@use '../layout' as *;
+
+@mixin column-list(
+  $columns: 3,
+  $gap: 1.5rem,
+  $tile-padding: 20px 10px,
+  $row-margin: 0 -10px,
+  $two-col-at: grove-bp('md'),
+  $three-col-at: grove-bp('lg')
+) {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: $row-margin;
+
+  @include grove-selector('promo') {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+
+  // tile spacing
+  & > * {
+    padding: $tile-padding;
+    margin: 0;
+    border-bottom: none;
+  }
+
+  @include grove-selector('promo-content') {
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+
+    @include grove-selector('byline') {
+      display: none;
+    }
+
+    @include grove-selector('promo-audio-label') {
+      order: 1;
+    }
+    @include grove-selector(('promo-title', 'promo-content', 'description')) {
+      order: 2;
+    }
+  }
+
+  // at medium widths, two columns of tiles (less than half to account for spacing)
+  @media (min-width: $two-col-at) {
+    & > * {
+      flex-basis: 50%;
+      max-width: 50%;
+    }
+  }
+
+  // at wide widths, three columns of tiles (less than a third to account for spacing)
+  @if $columns >= 3 {
+    @media (min-width: $three-col-at) {
+      & > * {
+        flex-basis: 33%;
+        max-width: 33%;
+      }
+    }
+  }
+
+  @include grove-selector('promo-media') {
+    margin: 0;
+  }
+}
+
+// Named shortcuts. Keyword args pass straight through to column-list.
+@mixin two-column-list($args...)   { @include column-list(2, $args...); }
+@mixin three-column-list($args...) { @include column-list(3, $args...); }

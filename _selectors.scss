@@ -132,8 +132,7 @@ $grove-selectors-base: (
   metadata-relocatable-links: '[class$="-contentInfo"] a',
 
   content-image:   'figure .Image, .PromoXS-media .Image',
-  content-figure-caption: '.Figure-caption, .CarouselSlide-infoDescription',
-  content-figure-credit: '.Figure-credit, .CarouselSlide-infoAttribution',
+  caption: '.Figure-caption, .CarouselSlide-infoDescription, .Figure-credit, .CarouselSlide-infoAttribution, [class$="-credit-container"] [class$="-credit"], [class$="-credit-container"] [class$="-divider"], [class$="-credit-container"] [class$="-source"]',
   title-text: '[class$="-title"]',
   description: '[class$="-description"]',
 

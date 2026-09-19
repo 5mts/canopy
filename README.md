@@ -45,7 +45,7 @@ Requires **Dart Sass 1.78+** run with `--pkg-importer=node` (for `pkg:` specifie
 }
 
 // The canonical example — aside-aware list density, pure library keys:
-@include grove-selector('page-is-show-any') {
+@include grove-selector('page-is-show') {
   @include grove-selector('main-without-aside') { /* 3-col layouts */ }
   @include grove-selector('main-with-aside')    { /* 2-col layouts */ }
 }
@@ -89,7 +89,7 @@ A map value may be a list of other keys — the blessed way to name a grouping:
 
 ```scss
 // in the shared map:
-show-title: ('podcast-title', 'radio-title'),
+show-container: ('podcast-container', 'radio-container'),
 ```
 
 References resolve at lookup time, so composites track edits to the keys they point at. Name your *site-specific* groupings the same way, in your own variables file — they don't belong in the shared map.

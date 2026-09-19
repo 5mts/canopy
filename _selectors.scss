@@ -54,20 +54,10 @@ $grove-selectors-base: (
 
   container-columns: '.FourColumnContainer, .OneColumnContainer, .ThreeColumnContainer, .TwoColumnContainer3070, .TwoColumnContainer5050, .TwoColumnContainer7030',
 
-  // page identity predicates — unions and opaque abbreviations only; readable
-  // single classes (.PodcastPage, .SectionPage, .TagPage, .RadioShowPage) go raw.
-  // NOTE the radio asymmetry (.RadioShowPage-body vs podcast's bare page class)
-  // is as-inspected on Grove — confirm before "fixing".
-  page-is-podcast-episode: '.PCEP',
-  page-is-podcast: '.PodcastPage, .PCEP',
-
+  // page types
+  page-is-show: '.PodcastPage, .RadioShowPage',
+  page-is-episode: '.PCEP, .RSEP',
   page-is-archive: '.SectionPage, .TagPage',
-
-  page-is-radio-episode: '.RSEP',
-  page-is-radio: '.RadioShowPage-body, .RSEP',
-
-  page-is-show-any: '.PodcastPage, .RadioShowPage',
-  page-is-episode-any: '.PCEP, .RSEP',
 
   // Content components
   // Excludes promos nested inside other ps-* containers where the base
@@ -122,11 +112,6 @@ $grove-selectors-base: (
   main-without-aside: 'main:not(:has(~ aside, aside), aside ~ main)',
   main-with-aside: 'main:has(~ aside, aside), aside ~ main',
 
-  // Sidebar slot — destination for JS-relocated content (e.g. metadata links).
-  // First-pass selector covering known Grove side-region variants; refine after
-  // inspecting the real DOM on the first integration run.
-  article-sidebar: '[class$="-sidebar"], [class$="-aside"]',
-
   // Metadata links eligible for relocation into the sidebar by JS. First-pass
   // selector; narrow if Grove emits unrelated links in this region.
   metadata-relocatable-links: '[class$="-contentInfo"] a',
@@ -143,16 +128,12 @@ $grove-selectors-base: (
   podcast-container: '.PodcastPage-main, .PCEP-content .PCEP-wrapper',
   podcast-aside: '.PodcastPage-aside, .PCEP-aside',
   podcast-cover-and-title: '.PodcastPage-top',
-  podcast-title: '.PodcastPage-headline',
   podcast-byline: '.PodcastPage-byline',
   podcast-description: '.PodcastPage-byline + *',
-  podcast-credits: '.ListPeople',
-  podcast-credits-title: '.ListPeople-header-title',
   podcast-subscribe: '.PodcastActionBar',
   // opaque: '.PodcastLink-provider' doesn't say "subscribe label"
   podcast-subscribe-label: '.PodcastLink-provider',
   podcast-social-bar: '.PodcastPage-social',
-  podcast-cover-art: '.PodcastPage-cover-art, .PCEP-parentInfo:has(picture)',
   podcast-icon-headings: '.PodcastActionBar-heading, .PodcastPage-social .SocialBar-heading',
   podcast-hostname: '.PodcastPage-hostName',
   episode-series-header: '[class$="EP-parentInfo"]',
@@ -161,13 +142,9 @@ $grove-selectors-base: (
   // radio show
   radio-container: '.RadioShowPage-main, .RSEP-content .RSEP-wrapper',
   radio-aside:    '.RadioShowPage-aside, .RSEP-aside',
-  radio-cover-art: '.RadioShowPage-cover-art, .RSEP-parentInfo:has(picture)',
   radio-cover-and-title: '.RadioShowPage-top',
-  radio-title: '.RadioShowPage-headline',
   radio-byline: '.RadioShowPage-byline',
   radio-description: '.RadioShowPage-byline + *',
-  radio-credits: '.ListPeople',
-  radio-credits-title: '.ListPeople-header-title',
   radio-social-bar: '.RadioShowPage-social',
   // Only the social-heading half of podcast-icon-headings — radio has no
   // podcast-style subscribe action bar (.PodcastActionBar), so that half is omitted.
@@ -192,12 +169,8 @@ $grove-selectors-base: (
   show-aside: ('podcast-aside', 'radio-aside'),
   show-main: '[class$="Page-wrapper"], [class$="EP-main"]',
   show-cover-and-title: ('podcast-cover-and-title', 'radio-cover-and-title', 'episode-series-header'),
-  show-cover-art: ('podcast-cover-art', 'radio-cover-art'),
-  show-title: ('podcast-title', 'radio-title'),
   show-byline: ('podcast-byline', 'radio-byline'),
   show-description: ('podcast-description', 'radio-description'),
-  show-credits: ('podcast-credits', 'radio-credits'),
-  show-credits-title: ('podcast-credits-title', 'radio-credits-title'),
   show-social-bar: ('podcast-social-bar', 'radio-social-bar'),
   show-icon-headings: ('podcast-icon-headings', 'radio-icon-headings'),
   sidebar-headings: 'aside h2, aside h3, aside h4',
@@ -218,7 +191,6 @@ $grove-selectors-base: (
   author-info:   '[class$="-authorName"], [class$="-contributors"], [class$="-hostName"]',
   author-position: '[class$="-authorTitle"]',
   timestamp:     '[class$="-timestamp"], [class$="-timestamp"] > *',
-  category: '[class$="-category"]',
 
   // Tabs — active state is signalled via `[data-active="true"]`, with a
   // `.Tabs-tabs-tab` class as an alternative hook some Grove variants use.
@@ -263,7 +235,6 @@ $grove-selectors: $grove-selectors-base;
     @each $ref in $value {
       $resolved: grove($ref, list.append($seen, $key));
       // dedupe: composite members may resolve to the same selector
-      // (e.g. podcast-credits and radio-credits are both '.ListPeople')
       @if not list.index($result, $resolved) {
         $result: list.append($result, $resolved, comma);
       }

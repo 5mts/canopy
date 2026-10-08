@@ -1,19 +1,34 @@
-# Relocate — DOM moves that survive navigation
+# Move content
 
-`relocate()` (JS) moves elements to a new home and re-applies the move on
-every render and client-side navigation. The `relocate-flash-guard` pattern
-mixin is its CSS half: it hides a source until the move happens, so the
-element never flashes in its original spot — without risking content loss if
-JS fails.
+`relocate()` moves matching elements when the page loads and after Grove
+updates it. Register each move once in your theme's JavaScript.
 
-## Minimal usage
+## Move the podcast subscribe links
+
+This places the links inside the first `.my-sidebar-slot` element:
 
 ```js
 import { grove } from '@5mts/canopy/selectors.js';
 import { relocate } from '@5mts/canopy/relocate.js';
 
-relocate({ source: grove('podcast-subscribe'), dest: '.my-sidebar-slot', position: 'afterend' });
+relocate({ source: grove('podcast-subscribe'), dest: '.my-sidebar-slot' });
 ```
+
+Use any CSS selector for `source` and `dest`. All matching sources move;
+if the destination is missing, they stay where they are.
+
+`position` controls placement:
+
+| Value | Placement |
+|---|---|
+| `beforeend` (default) | Inside, after existing content |
+| `afterbegin` | Inside, before existing content |
+| `beforebegin` | Before the destination |
+| `afterend` | After the destination |
+
+## Prevent a flash before the move
+
+Optional SCSS hides the source until it moves:
 
 ```scss
 @use 'pkg:@5mts/canopy' as *;
@@ -24,30 +39,14 @@ relocate({ source: grove('podcast-subscribe'), dest: '.my-sidebar-slot', positio
 }
 ```
 
-The guard is optional — skip it for moves below the fold where a brief flash
-doesn't matter. Use it whenever the move must beat first paint.
+Use the same destination selector in both examples. The source stays visible
+on pages without a destination. If JavaScript fails, it reappears after
+five seconds.
 
-## The contract
+Options: `$fallback-delay: 5s`, `$duration: 0.4s`, and `$shift: -0.5rem`.
+These control the fallback reveal's delay, duration, and vertical movement.
+Reduced-motion settings remove the animation, but keep the delayed reveal.
 
-Moved nodes are stamped `data-fm-relocated`; destinations that received
-nodes gain the `fm-relocated` class. The guard keys off the per-element
-stamp, which is what makes it navigation-proof: fresh DOM the CMS swaps in
-on forward/back starts hidden again and reveals only once relocated. (A
-global "js-ready" flag can't do this — it never resets across a client-side
-nav.)
-
-## What the mixin owns — the part that's easy to get wrong
-
-- **Destination gate.** With `$dest`, sources hide only when the page
-  actually contains a destination (`body:has($dest)`) — no destination means
-  no move is coming, so nothing is hidden. Omit `$dest` only if the
-  destination exists on every page where the source does.
-- **No-JS fallback.** If the script never runs, a delayed reveal animation
-  (`$fallback-delay: 5s`) brings the content back instead of losing it.
-- **Reduced motion.** The fallback reveal is content recovery, not
-  decoration, so it stays — but as a cut rather than a tween.
-
-Tunables: `$fallback-delay: 5s`, `$duration: 0.4s`, `$shift: -0.5rem` (the
-slide-in offset). The reveal tweens `height: 0 → auto` via
-`interpolate-size: allow-keywords`, set on the element itself; browsers
-without support cut instead of tweening.
+Moved elements get `data-fm-relocated`; destinations get the `fm-relocated`
+class. The SCSS uses the attribute to reveal each element after it moves,
+including new content loaded during navigation.

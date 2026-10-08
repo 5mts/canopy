@@ -1,17 +1,12 @@
-// Generic DOM relocation engine.
+// Move elements selected by `source` to `dest` (inside it by default).
+// Runs on load, content changes, and navigation, including Back/Forward.
 //
-// Register rules that move every element matching `source` into the element
-// matching `dest`. Rules are applied when the DOM is ready and re-applied on
-// every render and client-side navigation (via onGroveRender), which is what
-// makes relocations survive the CMS's forward/back navigation.
+// Both values are CSS selectors; use grove('key') for a mapped Grove selector.
 //
-// Both `source` and `dest` are plain CSS selectors — pass grove('key') at the
-// call site when the target is a mapped element.
-//
-// Contract (SCSS depends on these — do not rename):
-//   - moved nodes are stamped `data-fm-relocated` (idempotency marker; also
-//     the hook for flash-guard styles that hide a source until it moves)
-//   - a destination that received nodes gets the `fm-relocated` class
+// SCSS uses these names; keep them in sync:
+//   data-fm-relocated marks moved elements so they move only once.
+//   fm-relocated marks a destination that received elements.
+// CSS can hide elements until data-fm-relocated is set to prevent a flash.
 
 import { onGroveRender } from "./ready.js";
 
@@ -22,7 +17,7 @@ let registered = false;
 export function relocate(rule) {
   rules.push(rule);
   if (!registered) {
-    registered = true; // lazy: importing this module has no side effects
+    registered = true; // start watching only when a rule is added
     onGroveRender(applyAll);
   }
 }

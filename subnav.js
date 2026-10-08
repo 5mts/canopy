@@ -1,33 +1,25 @@
-// Section-navigation enhancer: landmark a11y + current-page marking for one
-// nav container — nothing else. Returns the current page's link (or null)
-// so callers can compose, e.g. label a disclosure() toggle with it:
+// Label a menu for screen readers and mark the current page's link with
+// aria-current="page" and the fm-current class (or your chosen currentClass).
+// Returns the matching link, or null. Use it to label a menu button:
 //
 //   const current = subnav(container, { label: 'Section' });
 //   disclosure(container, { label: current?.textContent.trim() || 'Section', panel: 'ul' });
 //
-// Call it from an onGroveRender callback so fresh DOM after a client-side
-// navigation is re-enhanced; writes are attribute-only, so re-runs are
-// cheap no-ops.
-//
-// What it does:
-//   - role="navigation" + aria-label (skipped on <nav> or an existing
-//     label); role="list" restored on lists (Safari drops the list role
-//     under list-style: none)
-//   - the same-origin link matching location.pathname gets
-//     aria-current="page" + `currentClass` for consumer CSS
+// Call from onGroveRender to update the menu after navigation.
+// Links match by origin and path; query strings and hashes are ignored.
 
-// Path only; trailing slash insignificant.
+// Ignore trailing slashes when comparing paths.
 function normalizePath(pathname) {
   return pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
 }
 
 export function subnav(container, options = {}) {
   const {
-    label = "Menu",              // landmark name
+    label = "Menu",              // menu name for screen readers
     currentClass = "fm-current",
   } = options;
 
-  const isList = container.matches("ul, ol"); // nav role must not land on the <ul>
+  const isList = container.matches("ul, ol"); // preserve the list's role
 
   if (!isList) {
     if (container.tagName !== "NAV") container.setAttribute("role", "navigation");
@@ -44,8 +36,7 @@ export function subnav(container, options = {}) {
   let currentLink = null;
 
   for (const link of container.querySelectorAll("a[href]")) {
-    // same-origin only: an external link with a colliding path (e.g. "/about")
-    // must not steal aria-current or the caller's trigger label
+    // An external site's /about is not this site's /about.
     const isCurrent = link.origin === location.origin
       && normalizePath(link.pathname) === currentPath;
     link.classList.toggle(currentClass, isCurrent);

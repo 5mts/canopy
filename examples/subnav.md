@@ -1,23 +1,12 @@
-# Subnav — section navigation
+# Section navigation
 
-`subnav()` does one small job on a nav container: landmark a11y and
-current-page marking. It returns the current page's link so you can compose
-the rest — timing from `ready.js`, the dropdown from `disclosure.js` — with
-every piece visible at the call site.
+`subnav()` labels a menu for screen readers and marks the current page's
+link. Use it with `disclosure()` for a dropdown on small screens.
 
-## What subnav() does
+## JavaScript
 
-- **Landmark semantics** — `role="navigation"` + `aria-label` (skipped when
-  the container is a `<nav>` or already labeled), and `role="list"` restored
-  on its lists — Safari silently drops the list role under
-  `list-style: none`.
-- **Current-page marking** — the link whose path matches
-  `location.pathname` gets `aria-current="page"` and the `currentClass`
-  (default `fm-current`) for your CSS. Same-origin links only, so an
-  external link with a colliding path (e.g. `/about`) can't match; trailing
-  slashes are insignificant. Returns the first matching link, or null.
-
-## Composed: a sidebar nav that becomes a dropdown
+This expects a menu container with `id="sub-nav-menu"` and a `ul` of links.
+Add it to your theme's JavaScript:
 
 ```js
 import { onGroveRender } from '@5mts/canopy/ready.js';
@@ -28,44 +17,55 @@ onGroveRender(() => {
   const nav = document.querySelector('#sub-nav-menu');
   if (!nav) return;
 
-  const current = subnav(nav, { 
-    label: 'Section',
-    currentClass: "current-link"
-  });
+  const current = subnav(nav, { label: 'Section', currentClass: 'current-link' });
 
   disclosure(nav, {
-    label: current?.textContent.trim() || 'Section', // trigger shows the current page
+    label: current?.textContent.trim() || 'Section',
     panel: 'ul',
-    toggleClass: 'fm-subnav-toggle',
+    toggleClass: 'section-toggle',
     closeOnOutsideClick: true,
     closeOnEscape: true,
   });
 });
 ```
 
-Skip the `disclosure()` call for a plain, always-expanded nav — `subnav()`
-alone is still worth having for the landmark and `aria-current` semantics.
+The button shows the current page's link text, or "Section" if no link
+matches. Remove the `disclosure()` call and import for an expanded menu.
 
-## The CSS side
+## SCSS
 
-All visuals are yours — item spacing, separators, the current-link look,
-and *when* it's a dropdown:
+This bolds the current link and turns the menu into a dropdown below 768px:
 
 ```scss
 @use 'pkg:@5mts/canopy/patterns' as *;
 
-.fm-subnav-toggle { display: none; }   // hidden outside dropdown mode
+.section-toggle { display: none; }
 
 #sub-nav-menu {
-  a.current-link { font-weight: bold; } // the currentClass you passed above
+  a.current-link { font-weight: bold; }
 
-  @media (max-width: 767px) {          // when it's a dropdown — your call
-    @include disclosure-dropdown('fm-subnav-toggle') {
-      .fm-subnav-toggle { @include disclosure-glyph; /* + trigger chrome */ }
-      ul { background: white;          /* + panel chrome */ }
+  @media (max-width: 767px) {
+    @include disclosure-dropdown('section-toggle') {
+      .section-toggle { @include disclosure-glyph; }
+      ul {
+        flex-direction: column;
+        background: white;
+      }
     }
   }
 }
 ```
 
-See [disclosure.md](disclosure.md) for what the dropdown mixin owns.
+Change the width, colors, and spacing for your site. More options:
+[dropdowns and accordions](disclosure.md).
+
+## Current-page and accessibility details
+
+- Matching links get `aria-current="page"` and `currentClass` (default:
+  `fm-current`). Links must be on the same site. Matching ignores query
+  strings, hashes, and trailing slashes.
+- `subnav()` returns the first matching link, or `null`.
+- It adds a navigation role and label where needed, and preserves an
+  existing `aria-label`. Pass a container around the list, such as a `nav`
+  or `div`; a bare `ul` or `ol` won't get a navigation role or label.
+- Lists get `role="list"` so Safari recognizes them when bullets are hidden.

@@ -1,11 +1,6 @@
-// ==========================================================================
-// canopy pattern — audio-player-bottom
-// ==========================================================================
-//
-// Pin Grove's persistent audio player to the bottom of the viewport. The
-// non-obvious half is $reserve-footer: pad the page footer so the fixed
-// player never covers its content — the two rules must stay in sync, which
-// is why they live in one mixin.
+// Fix Grove's audio player at the bottom of the screen. Set $offset for its
+// bottom position and $reserve-footer for space below the footer content.
+// Footer padding applies at $reserve-at and wider (768px by default).
 
 @use '../selectors' as *;
 @use '../layout' as *;

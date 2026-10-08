@@ -1,25 +1,14 @@
-// ==========================================================================
-// canopy pattern — relocate-flash-guard
-// ==========================================================================
-//
-// The CSS half of relocate.js: hide a relocation source until JS moves it
-// (the move stamps `data-fm-relocated` on the node — see the contract in
-// relocate.js). Include inside the source's own rule:
+// Hide an element until relocate.js moves it and adds data-fm-relocated.
+// Include inside the element's rule:
 //
 //   @include grove-selector('podcast-subscribe') {
 //     @include relocate-flash-guard($dest: '.my-sidebar-slot');
 //   }
 //
-// Why each piece exists:
-//   - keyed to the per-element marker, NOT a global "js-ready" flag: DOM the
-//     CMS swaps in on client-side navigation starts hidden again and only
-//     reveals once relocated (a global flag never resets across a nav).
-//   - $dest gates the hide behind body:has($dest): on a page with no
-//     destination the source is never hidden — there's nowhere to move TO.
-//   - the delayed reveal animation is the no-JS fallback: if the script
-//     never runs, content reappears after $fallback-delay instead of being
-//     lost. Reduced motion keeps the recovery (it's content recovery, not
-//     decoration) but makes it a cut instead of a tween.
+// With $dest, hide only on pages containing that destination. New elements
+// loaded during navigation stay hidden until moved. If JS doesn't run,
+// reveal the content after $fallback-delay (5s). Reduced motion skips the
+// transition but still restores the content.
 
 $-flash-guard-keyframes-emitted: false;
 
@@ -28,8 +17,7 @@ $-flash-guard-keyframes-emitted: false;
   opacity: 0;
   overflow: hidden;
   transform: translateY($shift);
-  // enables the height: 0 → auto tween; set here, not :root — it only needs
-  // to cover this element's own animation
+  // Allow the height to animate from 0 to auto.
   interpolate-size: allow-keywords;
   animation: fm-relocate-reveal $duration $delay forwards;
 
@@ -40,7 +28,7 @@ $-flash-guard-keyframes-emitted: false;
 }
 
 @mixin relocate-flash-guard($dest: null, $fallback-delay: 5s, $duration: 0.4s, $shift: -0.5rem) {
-  // shared keyframes, emitted once per compilation on first use
+  // Add the shared animation once per compilation.
   @if not $-flash-guard-keyframes-emitted {
     $-flash-guard-keyframes-emitted: true !global;
     @at-root {

@@ -1,26 +1,12 @@
-// ==========================================================================
-// canopy pattern — disclosure CSS
-// ==========================================================================
-//
-// The CSS half of disclosure.js: structural collapse/reveal keyed off the
-// toggle's [aria-expanded]. Brand styling (colors, borders, spacing) and
-// breakpoints stay in the consumer — wrap an @include in your own media
-// query to scope when the mechanism applies, and hide the toggle yourself
-// outside that scope (`.my-toggle { display: none; }`).
-//
-// Two shapes:
-//   disclosure-accordion — collapse the container's children while closed.
-//     Fail-open: the collapse itself lives inside :has(), so browsers
-//     without :has() support never collapse (content stays visible).
-//   disclosure-dropdown — hide a panel, reveal it as an overlay while open.
-//     Fail-closed by construction (the panel is hidden unconditionally),
-//     so the whole mechanism — trigger visibility included — sits behind
-//     an @supports gate: old browsers keep the plain expanded panel and
-//     never see the trigger.
+// Show/hide styles for disclosure.js. Add colors, borders, and spacing in
+// your theme. Wrap an include in a media query to limit it to certain widths,
+// and hide the toggle outside those widths: .my-toggle { display: none; }.
+// Keep the toggle hidden by default for disclosure-dropdown; it shows the
+// toggle only in browsers with :has(). Both mixins leave content visible
+// in browsers without :has().
 
-// Open/closed indicator on the toggle button. Alt-text syntax keeps the
-// glyph out of the button's accessible name (plain declaration first as
-// fallback for browsers without `content` alt text).
+// Add an open/closed arrow to the button. Empty alt text keeps screen readers
+// from reading the arrow where supported; the first declaration is a fallback.
 @mixin disclosure-glyph($closed: '▼', $open: '▲') {
   &::after {
     content: $closed;
@@ -33,11 +19,9 @@
   }
 }
 
-// Apply on the container disclosure() was called on. Collapses the
-// container's direct children (descendants go with them) while the toggle
-// is closed, sparing the toggle and any $preserve selectors — e.g. pass
-// $preserve: 'h2' to keep a visually-hidden heading in the accessibility
-// tree. Toggle styling is entirely yours.
+// Include on the container passed to disclosure(). Hides its children while
+// closed, except the toggle and $preserve matches. For example, $preserve: 'h2'
+// keeps headings available to screen readers. Style the toggle in your theme.
 @mixin disclosure-accordion($toggle-class, $preserve: ()) {
   $spared: ':not(.#{$toggle-class})';
   @each $selector in $preserve {
@@ -49,17 +33,15 @@
   }
 }
 
-// Apply on the container disclosure() was called on. Hides $panel and
-// reveals it as a full-width overlay under the trigger while open. $panel
-// is matched by descendant selector on purpose — it may be nested inside
-// wrapper markup. @content is emitted inside the @supports gate at
-// container level: put your dropdown-mode brand styles (trigger chrome,
-// panel background/shadow) there so old browsers never see them.
+// Include on the container passed to disclosure(). Shows $panel as a
+// full-width overlay below the toggle when open. The panel can be nested.
+// Put dropdown colors, backgrounds, and shadows in the include's content block
+// so they apply only in browsers that support the dropdown.
 @mixin disclosure-dropdown($toggle-class, $panel: 'ul', $panel-display: flex) {
-  position: relative; // anchor for the overlay panel
+  position: relative; // Position the panel relative to this container.
 
   @supports selector(:has(*)) {
-    // trigger bar: full width, label left, glyph right
+    // Full-width toggle: label left, arrow right.
     .#{$toggle-class} {
       display: flex;
       justify-content: space-between;

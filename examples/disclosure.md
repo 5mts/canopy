@@ -1,14 +1,13 @@
-# Disclosure — dropdown & accordion
+# Dropdowns and accordions
 
-`disclosure()` (JS) prepends a `<button aria-expanded>` toggle and flips the
-attribute — that's its whole job. The `disclosure-dropdown` /
-`disclosure-accordion` pattern mixins are the structural CSS that acts on it.
-Together they make a complete, accessible widget that survives Grove's
-client-side navigation; your theme adds only the look.
+`disclosure()` adds a button that opens and closes content. Use it with
+the SCSS below; JavaScript alone won't hide anything. Set colors, spacing,
+and borders in your theme.
 
-## Minimal dropdown
+## Dropdown menu
 
-A sidebar nav that becomes a dropdown below tablet width:
+This makes `#sub-nav-menu` a dropdown below 768px. The menu must contain a
+`ul`. Put the JavaScript in your theme:
 
 ```js
 import { onGroveRender } from '@5mts/canopy/ready.js';
@@ -20,88 +19,72 @@ onGroveRender(() => {
 });
 ```
 
+Add this to your SCSS:
+
 ```scss
 @use 'pkg:@5mts/canopy/patterns' as *;
 
-.my-toggle { display: none; }        // hidden outside dropdown mode
+.my-toggle { display: none; }
 
 #sub-nav-menu {
-  @media (max-width: 767px) {        // when it's a dropdown — your call
+  @media (max-width: 767px) {
     @include disclosure-dropdown('my-toggle') {
-      .my-toggle { @include disclosure-glyph; /* + your trigger chrome */ }
-      ul { background: white;        /* + your panel chrome */ }
+      .my-toggle { @include disclosure-glyph; }
+      ul {
+        flex-direction: column;
+        background: white;
+      }
     }
   }
 }
 ```
 
-There is deliberately no breakpoint in either API: the media query above is
-the only place "below tablet" exists. Leave it unscoped for an always-on
-dropdown.
+Change `767px` to choose when the dropdown appears. Remove the media query
+to use a dropdown at every width. Keep `toggleClass` and the mixin's first
+argument identical. Repeated calls update the label without adding another button.
 
-## Minimal accordion
+To close the menu on an outside click or Escape, pass
+`closeOnOutsideClick: true` and `closeOnEscape: true` to `disclosure()`.
 
-Collapse a wrapper's content in place (e.g. a transcript) behind a toggle:
+## Collapsible transcript
 
-```js
-disclosure(wrapper, { label: 'Transcript', toggleClass: 'my-toggle' });
-```
-
-```scss
-.my-wrapper {
-  @include disclosure-accordion('my-toggle', $preserve: 'h2');
-  .my-toggle { @include disclosure-glyph; }
-}
-```
-
-`$preserve` lists selectors to spare from the collapse — here the wrapper's
-heading stays in the accessibility tree (visually hide it yourself if the
-toggle replaces it on screen).
-
-### Applied: collapsing a transcript
-
-Let's say you want to collapse transcripts. You could establish a convention
-that transcripts are a module (say, a Rich Text Module) that start with a
-heading with only the word "Transcript". Then you could detect that element
-and turn it into an accordion:
+This example finds a container whose first child is an `h2` containing only
+"Transcript". In the CMS, start each transcript with that heading.
 
 ```js
 import { onGroveElement } from '@5mts/canopy/ready.js';
 import { disclosure } from '@5mts/canopy/disclosure.js';
 
-onGroveElement('h2:first-child', (h2) => {
-  if (h2.textContent.trim().toLowerCase() !== 'transcript') return; // site convention
+onGroveElement('h2:first-child', (heading) => {
+  if (heading.textContent.trim().toLowerCase() !== 'transcript') return;
 
-  disclosure(h2.parentElement, { label: 'Transcript', toggleClass: 'my-toggle' });
-  h2.parentElement.classList.add('my-wrapper');
+  const wrapper = heading.parentElement;
+  disclosure(wrapper, { label: 'Transcript', toggleClass: 'transcript-toggle' });
+  wrapper.classList.add('collapsible-transcript');
 });
 ```
 
-The selector does the structural work: `:first-child` means "leads its
-wrapper", and because `disclosure()` prepends the toggle button, a built
-wrapper's heading is no longer `:first-child` — so re-runs and re-rendered
-DOM can't match twice. Only the text convention needs JS (CSS has no
-`:contains`).
+```scss
+@use 'pkg:@5mts/canopy/patterns' as *;
 
-The SCSS is the accordion above verbatim — `$preserve: 'h2'` exists for
-exactly this: the toggle replaces the heading visually, but the h2 stays in
-the accessibility tree.
+.collapsible-transcript {
+  @include disclosure-accordion('transcript-toggle', $preserve: 'h2');
+  .transcript-toggle { @include disclosure-glyph; }
+}
+```
 
-## What the mixins own — the part that's easy to get wrong
+The heading stays visible when closed. Omit `$preserve: 'h2'` to hide it
+with the transcript. The container should hold only the transcript: its
+other direct children will also collapse.
 
-- `disclosure-dropdown($toggle-class, $panel: 'ul', $panel-display: flex)` —
-  hides the panel and reveals it as a full-width overlay via `:has()`.
-  Because the panel is hidden unconditionally (fail-closed), the whole
-  mechanism sits behind an `@supports selector(:has(*))` gate: old browsers
-  keep a plain expanded menu instead of an unreachable one. Your `@content`
-  is emitted inside that gate, so dropdown-mode brand styles never leak to
-  browsers where the dropdown can't work.
-- `disclosure-accordion($toggle-class, $preserve: ())` — collapses the
-  container's direct children while the toggle is closed. Fail-open (the
-  collapse itself lives inside `:has()`), so no gate is needed.
-- `disclosure-glyph($closed: '▼', $open: '▲')` — the open/closed indicator,
-  using `content` alt-text syntax so the glyph stays out of the button's
-  accessible name.
+## SCSS options
 
-Everything else — trigger chrome, panel background/shadow, spacing, and
-*when* the mechanism applies — is deliberately yours.
+- `disclosure-dropdown($toggle-class, $panel: 'ul', $panel-display: flex)`
+  opens the panel as a full-width overlay. If you change `$panel`, change
+  the JavaScript `panel` option too.
+- `disclosure-accordion($toggle-class, $preserve: ())` hides direct children
+  when closed, except the button and any selectors in `$preserve`.
+- `disclosure-glyph($closed: '▼', $open: '▲')` adds an open/closed indicator
+  to the button.
+
+Browsers without CSS `:has()` support leave the content expanded.

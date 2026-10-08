@@ -1,15 +1,7 @@
-// ==========================================================================
-// canopy pattern — column-list
-// ==========================================================================
-//
-// Force a Grove promo list into responsive flex-tile columns: always two
-// columns above $two-col-at; expands to three above $three-col-at unless
-// $columns caps it at two (a 2-vs-3 switch, not an arbitrary count). Also
-// reflows each promo tile for the tile form (hides the byline, reorders
-// audio-label → title → content, resets media margins).
-//
-// Prefer the named shortcuts (two-column-list / three-column-list) in theme
-// files — they read more clearly than a bare number.
+// Arrange a promo list in two or three columns. Use two-column-list() or
+// three-column-list(). Both use two columns from $two-col-at (768px);
+// three-column-list() adds a third from $three-col-at (1240px).
+// Hides bylines, puts audio labels first, and removes image margins.
 
 @use '../selectors' as *;
 @use '../layout' as *;
@@ -33,7 +25,7 @@
     margin: 0;
   }
 
-  // tile spacing
+  // Tile spacing.
   & > * {
     padding: $tile-padding;
     margin: 0;
@@ -57,7 +49,7 @@
     }
   }
 
-  // at medium widths, two columns of tiles (less than half to account for spacing)
+  // Two columns.
   @media (min-width: $two-col-at) {
     & > * {
       flex-basis: 50%;
@@ -65,7 +57,7 @@
     }
   }
 
-  // at wide widths, three columns of tiles (less than a third to account for spacing)
+  // Three columns, if requested.
   @if $columns >= 3 {
     @media (min-width: $three-col-at) {
       & > * {
@@ -80,6 +72,6 @@
   }
 }
 
-// Named shortcuts. Keyword args pass straight through to column-list.
+// Both shortcuts accept column-list's named options, such as $gap.
 @mixin two-column-list($args...)   { @include column-list(2, $args...); }
 @mixin three-column-list($args...) { @include column-list(3, $args...); }

@@ -1,5 +1,4 @@
-// canopy patterns — opt-in, CSS-emitting recipes. Nothing here emits until
-// a theme @includes a mixin. Import separately from the core:
+// Import these mixins separately. Each adds CSS only when you @include it.
 //   @use 'pkg:@5mts/canopy/patterns' as *;
 @forward 'column-list';
 @forward 'audio-player-bottom';

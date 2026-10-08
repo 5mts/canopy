@@ -1,26 +1,21 @@
-// Disclosure toggle — the original wunc-grove subnav pattern, extracted.
-//
-// disclosure() prepends a <button aria-expanded> to the container. That's the
-// whole job: JS flips the attribute; consumer CSS keys ALL visibility off it
-// (collapse rules, :has() reveal, breakpoints via media queries — or no media
-// query for an always-on dropdown). Repeat calls only update a changed label,
-// so it's safe inside onGroveRender callbacks.
+// Add a button that switches aria-expanded between "true" and "false".
+// Use CSS to show or hide content based on that attribute.
+// Safe to call from onGroveRender; repeat calls only update the button text.
 //
 //   disclosure(container, {
-//     label: 'Menu',               // button text (updated on re-calls)
-//     toggleClass: 'fm-x-toggle',  // class for the button (also the rebuild guard)
-//     panel: 'ul',                 // optional aria-controls target (descendant
-//                                  // selector or element); if given but not
-//                                  // found, no button is built
-//     closeOnOutsideClick: false,  // click outside the container closes it
-//     closeOnEscape: false,        // Escape closes it and refocuses the button
-//   }) → the button (or null)
+//     label: 'Menu',
+//     panel: 'ul',
+//   });
+//
+// panel can be a selector within the container or an element. If a selector
+// finds nothing, return null. Otherwise return the button.
+// Optional: toggleClass sets its class (default: fm-disclosure-toggle).
+// Set closeOnOutsideClick or closeOnEscape to true when creating the button
+// to enable either. Both default to false. Escape also focuses the button.
 
 let uid = 0;
 
-// Toggles watched for outside clicks: one lazily-bound document listener;
-// entries self-prune when their container leaves the DOM, so client-side
-// navs need no teardown.
+// Share one outside-click listener; drop removed containers on the next click.
 const watched = new Set();
 let listenerBound = false;
 
@@ -45,8 +40,7 @@ export function disclosure(container, options = {}) {
     closeOnEscape = false,
   } = options;
 
-  // Built once per container — the existing toggle is the guard, so a
-  // client-side nav that swaps in a fresh container just gets rebuilt.
+  // Reuse the button if this container already has one.
   let button = container.querySelector(`.${toggleClass}`);
   if (!button) {
     let panelEl = null;
@@ -80,7 +74,7 @@ export function disclosure(container, options = {}) {
     }
 
     if (closeOnEscape) {
-      // container-level listener: dies with the subtree on a nav swap, no leak
+      // Keep the listener on the container so it leaves with the page content.
       container.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && button.getAttribute("aria-expanded") === "true") {
           button.setAttribute("aria-expanded", "false");
@@ -90,7 +84,7 @@ export function disclosure(container, options = {}) {
     }
   }
 
-  // guard: an unconditional write re-triggers reconcile via the body observer (hang)
+  // Only write changed text; repeated writes would keep triggering onGroveRender.
   if (typeof label === "string" && button.textContent !== label) {
     button.textContent = label;
   }

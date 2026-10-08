@@ -1,27 +1,14 @@
-// ==========================================================================
-// canopy — Grove Layout Values
-// ==========================================================================
-//
-// Mirrors of Grove's hard-coded layout values (breakpoints, and any future
-// container widths or fixed dimensions worth abstracting). Themes consume
-// these so a single Grove change propagates everywhere.
-//
-// Values stay as raw Sass, NOT CSS custom properties — `@media (min-width:
-// var(--bp-md))` does not work; custom properties don't resolve inside
-// media query conditions.
+// Grove breakpoints. Use these widths to match Grove's layout changes.
+// CSS variables don't work in media queries; use grove-bp() instead.
 //
 // Usage:
 //   @use 'pkg:@5mts/canopy' as *;
 //
-//   $bp-md: grove-bp('md');
-//
-//   @media (min-width: grove-bp('lg')) { ... }
+//   @media (min-width: grove-bp('lg')) { .my-heading { font-size: 2rem; } }
 
 @use 'sass:map';
 
-// Grove only emits two breakpoints right now (md / lg). Themes can add
-// their own (sm, xl, etc.) in their own token files — those aren't
-// Grove-controlled and don't belong here.
+// Keep site-specific breakpoints in your theme.
 $grove-breakpoints-base: (
   md: 768px,
   md-lg: 1024px,

@@ -1,11 +1,11 @@
 # canopy examples
 
-Worked recipes, one feature per file. Each shows the minimal complete usage
-(JS + SCSS where both halves apply), then explains what the library owns vs
-what stays in your theme.
+Copy an example, then change its selectors, labels, and styles for your site.
+SCSS and imported JavaScript go in your theme. For code pasted into the CMS,
+start with inline snippets.
 
-- [disclosure.md](disclosure.md) — accessible dropdown and accordion from `disclosure()` + the disclosure CSS mixins, applied to a sub-nav and a transcript
-- [relocate.md](relocate.md) — move DOM with `relocate()` + hide sources until they move with `relocate-flash-guard`
-- [subnav.md](subnav.md) — section navigation: `subnav()` for landmark a11y + current-page marking, composed with `disclosure()` for the dropdown
-- [inline-snippets.md](inline-snippets.md) — use the ready.js hooks from inline `<script>` snippets: `<script type="text/canopy">` for page-scoped snippets with MPA-like semantics, `canopy.on()` + a generic header stub for site-wide slots; `global.js` bundled or standalone from a CDN
-- [sidebar-left.md](sidebar-left.md) — flip the page sidebar to the left with `sidebar-left`; it knows Grove's side-by-side breakpoints and can control stacking below the flip point
+- [Inline snippets](inline-snippets.md) — run JavaScript pasted into the CMS.
+- [Dropdowns and accordions](disclosure.md) — add a button to show or hide content.
+- [Section navigation](subnav.md) — mark the current page and add a mobile menu.
+- [Move content](relocate.md) — move elements when a page loads or changes.
+- [Left sidebar](sidebar-left.md) — place the sidebar on the left or above the page.

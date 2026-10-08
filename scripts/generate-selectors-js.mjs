@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 // Regenerate ../selectors.js from ../_selectors.scss.
 //
-// Parses four pieces of "Grove surface area" from the SCSS source:
+// Copy these SCSS values to JavaScript:
 //   1. $grove-selectors-base map → groveSelectors object
 //   2. $grove-content-types list  → groveContentTypes array
 //   3. $grove-news-story-type     → groveNewsStoryType string
 //   4. $grove-head-suffixes list  → groveHeadSuffixes array
 //
-// Output is deterministic: same input → byte-identical output. Verify via
-// `git diff --exit-code selectors.js` after running with no source change.
+// With no source changes, rebuilding should leave selectors.js unchanged.
+// Check with: git diff --exit-code selectors.js
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -21,8 +21,7 @@ const RUNTIME = join(PKG_DIR, 'scripts', 'selectors-runtime.js');
 
 const raw = readFileSync(SRC, 'utf8');
 
-// Strip line comments so they don't confuse the parsers below. Block comments
-// aren't used in _selectors.scss; if that changes, extend this.
+// Remove line comments before parsing. Block comments are not supported.
 const src = raw.replace(/\/\/[^\n]*/g, '');
 
 function parseMap(blockName) {
@@ -44,7 +43,7 @@ function parseMap(blockName) {
 }
 
 function parseList(varName) {
-  // Matches: $var-name: 'a', 'b', 'c' !default;  OR without !default
+  // Match lists with or without !default.
   const re = new RegExp(`\\$${varName}:\\s*((?:'(?:[^'\\\\]|\\\\.)*'\\s*,?\\s*)+)(?:!default)?\\s*;`);
   const m = src.match(re);
   if (!m) throw new Error(`Could not locate $${varName}`);
@@ -81,8 +80,7 @@ const constants =
   `export const groveHeadSuffixes  = Object.freeze(${JSON.stringify(headSuffixes)});\n\n`;
 
 const runtime = readFileSync(RUNTIME, 'utf8')
-  // Strip the runtime's own header comment so it doesn't appear inside the
-  // generated file (the banner above already explains provenance).
+  // Remove this header; the generated file already has one.
   .replace(/^\/\/[^\n]*\n(\/\/[^\n]*\n)*\n?/, '');
 
 writeFileSync(OUT, banner + constants + runtime);

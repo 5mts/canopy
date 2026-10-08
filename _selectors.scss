@@ -1,68 +1,36 @@
-// ==========================================================================
-// canopy — Grove Selector Knowledge
-// ==========================================================================
-//
-// A curated map of the Grove selectors that are genuinely hard to know or
-// easy to get wrong. THE KEEP-TEST: an entry earns its place only if it adds
-// information the raw selector lacks —
-//   - unions of many classes            (container-columns, episode-list)
-//   - composites by key reference       (show-*: ('podcast-x', 'radio-x'))
-//   - gnarly logic                      (promo, main-with-aside, eyebrow)
-//   - variant-suffix attribute patterns (promo-title, byline, main-content)
-//   - opaque class decoders             (.PCEP, .PH-persistent-player, .NavI)
-//
-// Plain readable 1:1 classes (.SocialBar, .Image, ps-tabs) are NOT mapped —
-// write those raw in your theme; the class name already says what it is.
-//
-// --------------------------------------------------------------------------
-// HOW TO CONSUME (from a theme repo)
-// --------------------------------------------------------------------------
-//
-// Basic usage:
+// Grove selectors by name. Use grove-selector() to style a component:
 //   @use 'pkg:@5mts/canopy' as *;
 //
 //   @include grove-selector('promo') {
-//     background: var(--color-surface);
+//     background: white;
 //   }
 //
-// Scope is the consumer's job. The mixin emits exactly the selector(s) the
-// map specifies — nothing more. Wrap with normal Sass nesting when you need
-// a specific ancestor:
-//
-//   body.has-player {
-//     @include grove-selector('audio-player') { … }
-//   }
-//
+// Nest the include to limit it to certain pages:
 //   html.ArtP {
-//     @include grove-selector('main-content') { … }
+//     @include grove-selector('main-content') { padding: 1rem; }
 //   }
 //
-// Site-specific selector groupings belong in your own theme variables, not
-// here — see wunc-grove's abstracts/_selectors.scss for the pattern.
-//
-// --------------------------------------------------------------------------
+// Write simple selectors such as .SocialBar or .Image directly in your CSS.
+// Keep site-specific selector groups in your theme.
 
 @use 'sass:map';
 @use 'sass:list';
 @use 'sass:meta';
 @use 'sass:string';
 
-// Canonical selectors shipped with the package. Update these when the Grove
-// vendor changes a class name and bump the package version.
+// Update this map when Grove changes its class names.
 $grove-selectors-base: (
   // Layout containers
 
   container-columns: '.FourColumnContainer, .OneColumnContainer, .ThreeColumnContainer, .TwoColumnContainer3070, .TwoColumnContainer5050, .TwoColumnContainer7030',
 
-  // page types
+  // Page types
   page-is-show: '.PodcastPage, .RadioShowPage',
   page-is-episode: '.PCEP, .RSEP',
   page-is-archive: '.SectionPage, .TagPage',
 
   // Content components
-  // Excludes promos nested inside other ps-* containers where the base
-  // styling shouldn't apply. Add more ancestors to the :where() list as
-  // they're identified.
+  // Skip promos inside tabs and EplB episode lists.
   promo:         'ps-promo:not(:where(ps-tabs,.EplB) ps-promo)',
   promo-media:    '[class^="Promo"][class$="-media"]',
   promo-content:    '[class^="Promo"][class$="-content"]',
@@ -78,8 +46,7 @@ $grove-selectors-base: (
 
   // Typography
   promo-title:   '[class^="Promo"][class$="-title"]',
-  // Grove suffixes component headers with -header OR -heading interchangeably;
-  // this union covers both so themes never have to know which one a component uses
+  // Grove uses both -header and -heading for component headings.
   heading: '[class$="-header"], [class$="-heading"]',
   heading-title: '[class$="-header-title"]',
 
@@ -89,12 +56,12 @@ $grove-selectors-base: (
   main-content:   '[class$="-mainContent"]',
   main-headline:   'h1[class$="-headline"]',
   byline:          '[class$="-byline"]',
-  // -contentInfo = the byline/timestamp metadata block under an article head
+  // Byline and timestamp below an article headline.
   content-meta:  '[class$="-contentInfo"]',
 
   page-lead:      'main [class$="-lead"]',
   breadcrumbs:    '[class$="-breadcrumbs-wrapper"]',
-  // opaque: nothing in '.PromoPeople-content' says "byline"
+  // Byline in a people promo.
   people-byline: '.PromoPeople-content',
   article-body: 'article [class$="-articleBody"]',
   article-subhead: 'article h2[class$="-subheadline"]',
@@ -108,12 +75,12 @@ $grove-selectors-base: (
   page-head-text: '[class$="Page-head-text"]',
 
 
-  // main without an accompanying aside element
+  // Match whether main contains an aside or has an aside sibling.
   main-without-aside: 'main:not(:has(~ aside, aside), aside ~ main)',
   main-with-aside: 'main:has(~ aside, aside), aside ~ main',
 
-  // Metadata links eligible for relocation into the sidebar by JS. First-pass
-  // selector; narrow if Grove emits unrelated links in this region.
+  // Links below the headline that JS can move to the sidebar.
+  // Check which links this matches before moving them.
   metadata-relocatable-links: '[class$="-contentInfo"] a',
 
   content-image:   'figure .Image, .PromoXS-media .Image',
@@ -121,17 +88,17 @@ $grove-selectors-base: (
   title-text: '[class$="-title"]',
   description: '[class$="-description"]',
 
-  // content types
+  // Content types
   news-story:     '.ArtP:not(.aside)',
 
-  // podcast
+  // Podcast
   podcast-container: '.PodcastPage-main, .PCEP-content .PCEP-wrapper',
   podcast-aside: '.PodcastPage-aside, .PCEP-aside',
   podcast-cover-and-title: '.PodcastPage-top',
   podcast-byline: '.PodcastPage-byline',
   podcast-description: '.PodcastPage-byline + *',
   podcast-subscribe: '.PodcastActionBar',
-  // opaque: '.PodcastLink-provider' doesn't say "subscribe label"
+  // Subscribe link label.
   podcast-subscribe-label: '.PodcastLink-provider',
   podcast-social-bar: '.PodcastPage-social',
   podcast-icon-headings: '.PodcastActionBar-heading, .PodcastPage-social .SocialBar-heading',
@@ -139,31 +106,22 @@ $grove-selectors-base: (
   episode-series-header: '[class$="EP-parentInfo"]',
   podcast-header: '.PodcastPage-info',
 
-  // radio show
+  // Radio show
   radio-container: '.RadioShowPage-main, .RSEP-content .RSEP-wrapper',
   radio-aside:    '.RadioShowPage-aside, .RSEP-aside',
   radio-cover-and-title: '.RadioShowPage-top',
   radio-byline: '.RadioShowPage-byline',
   radio-description: '.RadioShowPage-byline + *',
   radio-social-bar: '.RadioShowPage-social',
-  // Only the social-heading half of podcast-icon-headings — radio has no
-  // podcast-style subscribe action bar (.PodcastActionBar), so that half is omitted.
+  // Radio pages have social headings but no podcast subscribe bar.
   radio-icon-headings: '.RadioShowPage-social .SocialBar-heading',
   radio-hostname: '.RadioShowPage-hostName',
   radio-header: '.RadioShowPage-info',
 
-  // combined shows — union of the podcast-* and radio-* keys above. Because
-  // those underlying keys already span both show pages (.PodcastPage /
-  // .RadioShowPage) and episode pages (.PCEP / .RSEP), one show-* key styles
-  // the component across both media and both page types in a single rule.
-  // A list of keys is a composite: grove() resolves each entry by reference,
-  // so these stay in sync with the keys above without repeating selectors.
-  // (No show-subscribe/-subscribe-label: those are podcast-only.)
+  // Shared podcast/radio selectors. Lists combine the named keys above.
+  // Subscribe selectors are podcast-only.
   show-container: ('podcast-container', 'radio-container'),
-  // The landing/episode split cuts ACROSS the podcast/radio split: Grove's
-  // layout puts each FAMILY side-by-side at a different breakpoint (landing
-  // mains go row at md; episode wrappers only at md-lg), so layout code
-  // needs the container union per family, not per medium.
+  // Show pages put the sidebar beside content at md; episode pages at md-lg.
   show-landing-container: '.PodcastPage-main, .RadioShowPage-main',
   episode-container: '.PCEP-content .PCEP-wrapper, .RSEP-content .RSEP-wrapper',
   show-aside: ('podcast-aside', 'radio-aside'),
@@ -184,23 +142,20 @@ $grove-selectors-base: (
   // News tile
   news-tile:     'ps-promo[data-content-type="news-story"]',
 
-  // Eyebrow — Grove emits `<div class="…-category"><a>…</a></div>` above
-  // promo titles to label the category. The `:has(> a)` filter excludes
-  // similarly-named utility classes that don't wrap a link.
+  // Category links above titles. :has() skips elements without a link.
   eyebrow:       '[class$="-category"]:has(> a), [class$="-breadcrumbs"]:has(a)',
   author-info:   '[class$="-authorName"], [class$="-contributors"], [class$="-hostName"]',
   author-position: '[class$="-authorTitle"]',
   timestamp:     '[class$="-timestamp"], [class$="-timestamp"] > *',
 
-  // Tabs — active state is signalled via `[data-active="true"]`, with a
-  // `.Tabs-tabs-tab` class as an alternative hook some Grove variants use.
+  // The selected tab has data-active="true".
   tab:           'ps-tabs .Tabs-tabs-tab',
   tab-active:    'ps-tabs [role="tab"][data-active="true"], ps-tabs .Tabs-tabs-tab[data-active="true"]',
 
-  // Action bar item filtered to social-service links only
+  // Social links in the action bar.
   social-action:   '.ActionLink[data-social-service]',
 
-  // Navigation — opaque abbreviations (.PH-*, .NavI)
+  // Navigation
   nav-bar:           '.PH-nav-bar',
   nav-item:          '.NavI',
   nav-item-list:     '.NavI-items',
@@ -213,15 +168,9 @@ $grove-selectors-base: (
 
 $grove-selectors: $grove-selectors-base;
 
-// Look up a Grove selector by its semantic key. Returns the raw selector.
-// Errors loudly if the key doesn't exist so typos fail at compile time.
-//
-// A map value may also be a list of other keys — a composite defined by
-// reference, e.g. `show-container: ('podcast-container', 'radio-container')`.
-// References resolve here at lookup time, so composites live inline in the
-// map next to ordinary entries (before or after the keys they point at) and
-// track any future edits to those keys. The JS generator only emits
-// quoted-string entries, so composites never appear in selectors.js.
+// Return the selector for a key, such as grove('promo'). Unknown keys stop
+// compilation. A list in the map combines other keys; these combined entries
+// are available in Sass only, not selectors.js.
 @function grove($key, $seen: ()) {
   @if list.index($seen, $key) {
     @error "Circular Grove selector reference: #{list.append($seen, $key, comma)}";
@@ -234,7 +183,7 @@ $grove-selectors: $grove-selectors-base;
     $result: ();
     @each $ref in $value {
       $resolved: grove($ref, list.append($seen, $key));
-      // dedupe: composite members may resolve to the same selector
+      // Skip duplicate selectors.
       @if not list.index($result, $resolved) {
         $result: list.append($result, $resolved, comma);
       }
@@ -244,22 +193,9 @@ $grove-selectors: $grove-selectors-base;
   @return $value;
 }
 
-// Apply styles to one or more Grove elements by their semantic keys.
-// Pass a single key string or a list of keys. The mixin emits exactly the
-// mapped selector(s) — no implicit scope. Wrap with Sass nesting if you
-// need a specific ancestor.
-//
-// Usage:
-//   @include grove-selector('promo') { … }
-//   → ps-promo[…] { … }
-//
-//   @include grove-selector(('news-tile', 'tab')) { … }
-//   → ps-promo[data-content-type="news-story"], ps-tabs .Tabs-tabs-tab { … }
-//
-//   body.has-player {
-//     @include grove-selector('audio-player') { … }
-//   }
-//   → body.has-player .PH-persistent-player { … }
+// Style one key or a list of keys. Nest the include to limit where it applies.
+//   @include grove-selector('promo') { margin: 0; }
+//   @include grove-selector(('news-tile', 'tab')) { color: navy; }
 @mixin grove-selector($keys) {
   $selector-list: ();
   @each $key in $keys {
@@ -270,17 +206,9 @@ $grove-selectors: $grove-selectors-base;
   }
 }
 
-// Some Grove components emit per-variant class names that differ only by a
-// single uppercase letter — e.g. `.PromoA-title`, `.PromoB-title`, … or
-// `.ListA-items`, `.ListB-items`, …. The variant letter is meaningless to
-// us; we want every variant styled the same.
-//
-// `grove-variants` returns a comma-separated selector list covering every
-// letter in `$letters`, so callers can interpolate it into a rule once.
-//
-// Usage:
-//   #{grove-variants('Promo', '-title', a b c d e)} { margin-top: 0; }
-//   → .PromoA-title, .PromoB-title, .PromoC-title, .PromoD-title, .PromoE-title
+// Build selectors for component variants. Match the case of Grove's classes.
+//   #{grove-variants('Promo', '-title', A B)} { margin-top: 0; }
+// Produces .PromoA-title, .PromoB-title { margin-top: 0; }
 @function grove-variants($prefix, $suffix, $letters) {
   $result: ();
   @each $letter in $letters {
@@ -290,21 +218,14 @@ $grove-selectors: $grove-selectors-base;
   @return $result;
 }
 
-// Match one `"key" : "value"` pair in the page-context metadata (currently a
-// <meta name="brightspot-dataLayer"> JSON blob — the mechanism is this
-// function's secret). Known keys: `program`, `category` (= Grove Section),
-// `keywords` (= Grove Tags), `pageType`, `series`.
+// Match a value in <meta name="brightspot-dataLayer">. Keys include program,
+// category (Grove Section), keywords (Grove Tags), pageType, and series.
 @function grove-page-match($key, $value) {
   @return "meta[name='brightspot-dataLayer'][content*='\"#{$key}\" : \"#{$value}\"']";
 }
 
-// An `html:has(...)` selector that's true when the page's context `$key`
-// equals `$value`. Pass a list of values to match ANY of them — kept as one
-// :has() so it stays valid inline before a combinator: `#{$sel} .foo { … }`.
-//
-// Usage:
-//   $program-is-broadside: grove-page-is('program', 'The Broadside');
-//   $program-is-any: grove-page-is('program', ('The Broadside', 'WUNC Politics'));
+// Limit styles to pages with a matching value. A list matches any listed value.
+//   #{grove-page-is('program', 'The Broadside')} { .my-heading { color: navy; } }
 @function grove-page-is($key, $values) {
   $matches: ();
   @each $value in $values {
@@ -319,33 +240,17 @@ $grove-content-types: 'ArtP', 'RSEP' !default;
 $grove-news-story-type: 'ArtP';
 $grove-head-suffixes: '-breadcrumbs-wrapper', '-headline', '-contentInfo', '-audioPlayer', '-parentInfo' !default;
 
-// List components — Grove emits per-variant list wrappers (`.ListA`, `.ListB`,
-// …, `.ListH`) whose child classes differ only by the variant letter. The
-// letter is meaningless to us; we style every variant the same. Add letters
-// here if Grove introduces more variants — one edit, every theme.
+// List variants covered by list-header and list-header-title.
+// Add letters here if Grove adds variants.
 $grove-list-prefix:  'List' !default;
 $grove-list-letters: A B C D E F G H !default;
 
-// Episode lists reuse the same `-header` / `-header-title` sub-element
-// structure as the generic lists. Only `.EplA` is folded into `list-header` /
-// `list-header-title` below — `.EplB` is deliberately excluded (the theme
-// treats it as a non-tile list). Add letters here to fold more variants in.
+// Include EplA episode lists in those header selectors. EplB is excluded.
 $grove-epl-prefix:  'Epl' !default;
 $grove-epl-letters: A !default;
 
-// Promote the common list sub-elements to named selector keys, so themes can
-// target the whole `ListA…ListH` set with a single `grove-selector('list-header')`
-// call instead of repeating the grove-variants() expansion at every call site.
-// Merged in here (after grove-variants is defined) rather than written into
-// $grove-selectors-base, so the letter set stays single-sourced in
-// $grove-list-letters and these style-only hooks don't emit JS entries in
-// selectors.js.
-// These values are literal selectors, not key references, so they must be
-// stored as STRINGS. grove() resolves any *list*-valued entry as a composite
-// of other keys (see show-container etc. above); a bare list of `.ListA-header`
-// selectors would be sent back through grove() as keys and throw
-// "No Grove selector found". Interpolating the comma-list into a quoted string
-// keeps them as plain selectors, matching every other multi-selector entry.
+// Add selectors built from the variants above. These are Sass-only keys.
+// Store selectors as quoted strings: grove() treats lists as key references.
 $_list-header: list.join(
   grove-variants($grove-list-prefix, '-header', $grove-list-letters),
   grove-variants($grove-epl-prefix,  '-header', $grove-epl-letters),

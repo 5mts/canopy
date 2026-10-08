@@ -1,5 +1,5 @@
-// Static runtime body for the generated selectors.js. Inlined verbatim by
-// scripts/generate-selectors-js.mjs — do not import this file directly.
+// Functions copied into selectors.js by scripts/generate-selectors-js.mjs.
+// Import selectors.js, not this file.
 
 export function grove(key) {
   const value = groveSelectors[key];

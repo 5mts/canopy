@@ -1,56 +1,34 @@
-// ==========================================================================
-// canopy pattern — sidebar placement
-// ==========================================================================
-//
-// Grove lays the page out as main + aside in a flex row, with the aside's
-// margins assuming right-side placement. sidebar-left flips the aside to
-// the left; the non-obvious half is everything that goes with the flip —
-// the margin corrections (without them the old right-hand spacing lands
-// between the sidebar and the viewport edge), the wrap-direction fix, and
-// knowing WHERE Grove goes side-by-side so you don't have to.
-//
-// One responsive decision, one mixin: where the sidebar sits at each
-// width. The default breakpoint is Grove's own side-by-side point for the
-// container, so the minimal call needs no width at all:
+// Move the sidebar to the left and adjust its margins. By default, use
+// Grove's breakpoint for the chosen container. Nest the include to choose
+// which pages to change:
 //
 //   html:has(#sub-nav-menu) {
 //     @include sidebar-left($gap: 2rem, $stacked: sidebar-first);
 //   }
-//
-// Scope which PAGES flip by nesting the include (html:has(...), a
-// page-identity class); the widths are the mixin's job.
 
 @use 'sass:map';
 @use '../selectors' as *;
 @use '../layout' as *;
 
-// Where Grove's own layout puts main + aside side by side, per container
-// family — mirrored from Grove's stylesheet so a vendor change is one edit
-// here. Notes: 'show-container' is deliberately absent (it unions two
-// families with different points — use the family keys). 'page-container'
-// ([class$="Page-wrapper"]) is md for OneOff/Author pages, but the
-// BlogPost/LiveBlog/ArtP wrappers it also matches go row at md-lg — pass
-// $breakpoint when targeting those. EventPage flips at md-lg; add its row
-// when an event container key lands in the selector map.
+// Widths where Grove puts the sidebar beside the main content.
+// For page-container, md fits OneOff/Author pages. Pass $breakpoint:
+// grove-bp('md-lg') for BlogPost/LiveBlog/ArtP pages.
+// show-container spans different widths, so it needs an explicit $breakpoint.
 $-sidebar-native-bp: (
   'page-container': grove-bp('md'),
   'show-landing-container': grove-bp('md'),
   'episode-container': grove-bp('md-lg'),
 );
 
-// $container — the flex parent of main content + aside: 'page-container'
-//   for the standard page layout, 'show-container' for podcast/radio
-//   pages. The aside itself is covered by the shared 'sidebar' /
-//   'sidebar-content' keys on every page type.
-// $breakpoint — flip at and above this width. Default: Grove's own
-//   side-by-side point for the container — pass a width only when your
-//   flip point deliberately differs from Grove's.
-// $stacked — what happens BELOW the flip point. Default null: nothing —
-//   Grove's own stacking (block or column below its side-by-side point) is
-//   left alone. `sidebar-first` stacks with the aside on top (a nav
-//   belongs there). `sidebar-last` stacks in document order, aside below —
-//   needed when $breakpoint is higher than Grove's point, to hold the
-//   stack through the band where Grove has already gone side-by-side.
+// $container: selector key for the flex parent of main content and aside.
+//   Use page-container, show-landing-container, or episode-container.
+// $gap: space to the right of the sidebar, at all widths.
+// $breakpoint: put the sidebar on the left at this width and above.
+//   Defaults to the container's width listed above.
+// $stacked: below that width, sidebar-first puts the aside above the content;
+//   sidebar-last uses document order (normally aside below). Default null
+//   keeps Grove's layout. Set this if a higher breakpoint should keep content
+//   stacked past Grove's usual breakpoint.
 @mixin sidebar-left($container: 'page-container', $gap: null, $breakpoint: null, $stacked: null) {
   @if $stacked != null and $stacked != sidebar-first and $stacked != sidebar-last {
     @error "sidebar-left: $stacked must be sidebar-first or sidebar-last (or null to leave Grove's stacking alone).";
@@ -82,8 +60,7 @@ $-sidebar-native-bp: (
     }
   }
 
-  // Grove's aside spacing assumes a right-hand sidebar; zero it and let
-  // $gap own the gutter.
+  // Remove right-sidebar margins and apply the requested gap.
   @include grove-selector('sidebar') {
     margin-left: 0;
     

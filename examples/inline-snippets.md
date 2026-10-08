@@ -1,48 +1,51 @@
-# Inline snippets — `text/canopy` page scripts + `canopy.on()`
+# Run JavaScript pasted into the CMS
 
-`ready.js` is a module, so out of the box only bundled code can use it.
-`global.js` brings its hooks to JS pasted into the CMS, in three tiers —
-each with exactly the ceremony it needs.
+Grove can change pages without reloading the browser. Canopy runs your code
+when the elements it needs appear, including after those page changes.
 
-Action names are the module exports minus the `on`: `"groveRender"`,
-`"groveElement"`, `"groveNavigate"` — and any hook the library adds later,
-automatically. Unknown actions throw, so typos fail loud.
+Your site must load `global.js` once. If it doesn't yet, follow
+[site setup](#site-setup).
 
-## Tier 1 — page snippets: `<script type="text/canopy">`
+## Code for one page
 
-For a snippet pasted into ONE page's content that should behave like it
-would on a normal website — affect that page, and only that page:
+Paste this into a page's HTML field. It adds a working "Back to top" button:
 
 ```html
+<button type="button" class="back-to-top">Back to top</button>
 <script type="text/canopy">
-  canopy.on("groveElement", ".EplB-header", el => {
-    // once per matching element, on this page only
+  canopy.on('groveElement', '.back-to-top', button => {
+    button.addEventListener('click', () => window.scrollTo({ top: 0 }));
   });
 </script>
 ```
 
-No stub, no load-order concern, no scope options. The unknown `type` makes
-the browser ignore the element; canopy executes it instead — **once each
-time the element appears**, so first loads, soft-nav arrivals, and soft-nav
-returns all behave identically (each run gets a fresh scope). When Grove
-swaps the content away, every registration the run made is torn down. The
-`canopy` inside is provided by the runtime, bound to that page-visit — safe
-to use even in async code within the snippet.
+Keep `type="text/canopy"`. Canopy runs the script when it appears and stops
+its registered callbacks when it leaves the page. Returning to the page
+runs a newly inserted script again.
 
-Caveats: the runtime compiles these with `new Function`, so a CSP that
-blocks eval rules them out (use tier 2 with `{scope: "page"}` there); and a
-page snippet only works on sites where `global.js` is installed — on others
-it is inert markup, visible in source.
+`groveElement` runs once per matching element. Use it for adding buttons,
+changing text, or attaching click handlers.
 
-## Tier 2 — site-wide snippets: header/footer slots
+## Code for every page
 
-A snippet in a site-wide CMS slot executes once per browsing session, not
-per page — so its registrations are deliberately persistent: they keep
-firing across client-side navigations, which is what "run on every page"
-requires. These use plain `<script>` plus the queue idiom.
+Use a normal `<script>` in a site-wide header or footer slot:
 
-**The site install** (once, stub first — it queues `on()` calls made before
-the module loads and is generic, so it never needs updating):
+```html
+<script>
+  canopy.on('groveElement', '.back-to-top', button => {
+    button.addEventListener('click', () => window.scrollTo({ top: 0 }));
+  });
+</script>
+```
+
+This handles each `.back-to-top` button as it appears across page changes.
+Include the button HTML wherever you want it. The setup below must come
+before site-wide snippets.
+
+## Site setup
+
+Add this once in the site-wide header, before other canopy scripts. Replace
+`VERSION` with the published version you want to use.
 
 ```html
 <script>
@@ -50,51 +53,60 @@ window.canopy = window.canopy || {
   on: (...args) => (window.canopyActions = window.canopyActions || []).push(args),
 };
 </script>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@5mts/canopy@0.4.0/global.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@5mts/canopy@VERSION/global.js"></script>
 ```
 
-Pin the CDN version; `@latest` means a republish can change every snippet
-on the site at once. On a site whose theme already bundles
-`import '@5mts/canopy/global.js'`, keep the stub and drop the CDN tag —
-loading two copies runs two observers. (The install also activates tier 1.)
+The first script holds calls until canopy loads. Use a fixed version so
+updates don't change your site unexpectedly.
 
-**Usage** — same actions, persistent by default:
+If your theme already includes `import '@5mts/canopy/global.js'`, keep the
+first script and omit the CDN script. Load `global.js` only once.
 
-```html
-<script>
-canopy.on("groveRender", () => { /* every page, every render */ });
-</script>
+Sites whose Content Security Policy blocks `eval` cannot run `text/canopy`
+scripts. Use a permitted normal script with `{ scope: 'page' }` instead.
+Without `global.js`, `text/canopy` scripts do nothing.
+
+## Choose when code runs
+
+| Action | Runs |
+|---|---|
+| `groveElement` | Once per element matching your selector |
+| `groveRender` | When ready, then after content or navigation changes |
+| `groveNavigate` | On load and whenever the path or query changes |
+
+`groveNavigate` ignores hash changes; returning to an earlier URL runs it
+again. The new page's elements may not exist yet, so use `groveElement`
+when working with them.
+
+With `groveRender`, check before changing text or adding/removing elements.
+Those changes trigger another run; repeating them can freeze the page:
+
+```js
+canopy.on('groveRender', () => {
+  const heading = document.querySelector('#section-title');
+  if (heading && heading.textContent !== 'Local news') {
+    heading.textContent = 'Local news';
+  }
+});
 ```
 
-## Tier 3 — programmatic callers
+## Limit a normal script to its current page
 
-Code with no script tag of its own — tag-manager custom HTML, the browser
-console, registrations made from inside callbacks. Same API as tier 2;
-registrations persist. Two extras:
+Pass `{ scope: 'page' }` last:
 
-- `{scope: "page"}` as a last argument guards a registration to the URL it
-  was made under — a permanent filter, not an unsubscribe, so navigating
-  back re-applies it. (This is also the no-eval fallback for tier 1.)
-- The raw wire form needs no stub at all and queues harmlessly forever if
-  `global.js` never loads:
+```js
+canopy.on('groveElement', '.back-to-top', button => {
+  button.addEventListener('click', () => window.scrollTo({ top: 0 }));
+}, { scope: 'page' });
+```
 
-  ```js
-  (window.canopyActions = window.canopyActions || []).push(["groveRender", () => { /* … */ }]);
-  ```
+This checks the path and query where the call was made. The callback stays
+registered and can run again when you return. In a normal script, calls
+apply site-wide unless you add this option. Calls from tag managers, the
+console, or other callbacks follow the same rule.
 
-`canopy.on()` returns an unsubscribe function once the module is loaded
-(queued calls can't return one — nothing exists yet to unsubscribe from).
+Once canopy has loaded, `canopy.on()` returns a function you can call to
+stop that registration. Calls made before it loads can't return this function.
 
-## The rules still apply
-
-The bridge changes where callbacks come from, not how they behave:
-
-- **Idempotent** — `groveRender` re-fires constantly. Reconcile against the
-  current DOM; never assume one run.
-- **No unconditional DOM writes** — the render observer sees your write and
-  re-fires you: an unguarded write loops and hangs the page. Guard every
-  mutation with a "did I already do this?" check, or use `groveElement`,
-  which tracks handled elements for you.
-
-Errors are isolated per snippet and per callback (`[canopy] …` in the
-console), so a broken snippet can't take down the theme's own enhancements.
+For debugging, look for `[canopy]` errors in the browser console. Check
+action names first: unknown names throw an error.

@@ -8,25 +8,27 @@ see right away:
 
 ## Run it
 
-Copy this folder, then:
-
 ```bash
+npx degit 5mts/canopy/starter my-grove-theme
+cd my-grove-theme
 npm install
-npm run build
+npm run dev
 ```
 
-Inject the script locally into the header of your site to test, using something like local overrides for your browser or our (Local Script Testing)[https://chromewebstore.google.com/detail/local-script-testing/jmgdaokiiafjphaomnmecgeldnpddebe] Chromium browser extension. 
+`npm run dev` rebuilds on every save and serves the theme at
+`http://localhost:3000/dist/theme.css`. To try it on your live site, add this
+to the page `<head>` with your browser's local overrides or our
+[Local Script Testing](https://chromewebstore.google.com/detail/local-script-testing/jmgdaokiiafjphaomnmecgeldnpddebe)
+extension for Chromium browsers:
 
-You'll want to inject something like the following into `head` of the page:
-```
+```html
 <link rel="stylesheet" href="http://localhost:3000/dist/theme.css">
 ```
 
-This writes `dist/theme.css`. Add it to your site, then load the home page.
+Then load the home page.
 
-While you work, `npm run dev` rebuilds on every save and serves the file at
-`http://localhost:3000/theme.css`. Point your site at that URL to test changes
-before you publish them.
+When you're ready to publish, `npm run build` writes a minified
+`dist/theme.css`. Add it to your site.
 
 ## Make it yours
 

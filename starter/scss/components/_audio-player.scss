@@ -1,0 +1,5 @@
+// Canopy pattern: pin the player to the bottom and keep it off the footer.
+@use 'pkg:@5mts/canopy/patterns' as *;
+@use '../tokens' as *;
+
+@include audio-player-bottom($offset: 0, $reserve-footer: $player-height);

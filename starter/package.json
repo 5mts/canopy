@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "build": "sass --pkg-importer=node scss/main.scss dist/theme.css --style=compressed --no-source-map",
-    "dev":   "http-server -p 3000 --cors -c-1 & sass --pkg-importer=node scss/main.scss dist/theme.css --watch --style=expanded --no-source-map"
+    "dev":   "concurrently -k -n serve,sass \"http-server -p 3000 --cors -c-1\" \"sass --pkg-importer=node scss/main.scss dist/theme.css --watch --style=expanded --no-source-map\""
   },
   "dependencies": {
     "@5mts/canopy": "^0.3.0"
   },
   "devDependencies": {
-    "sass": "^1.78.0",
-    "http-server": "^14.1.1"
+    "concurrently": "^9.2.0",
+    "http-server": "^14.1.1",
+    "sass": "^1.78.0"
   }
 }

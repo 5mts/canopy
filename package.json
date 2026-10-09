@@ -2,21 +2,34 @@
   "name": "@5mts/canopy",
   "version": "0.3.0",
   "description": "A lightweight toolkit for customizing the styling and presentation of Grove sites",
+  "author": "Five Mountains",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/5mts/canopy.git"
+  },
+  "homepage": "https://github.com/5mts/canopy#readme",
+  "bugs": "https://github.com/5mts/canopy/issues",
   "type": "module",
   "sass": "_index.scss",
   "main": "_index.scss",
   "exports": {
-    ".":                 { "sass": "./_index.scss" },
-    "./patterns":        { "sass": "./patterns/_index.scss" },
-    "./patterns.scss":   { "sass": "./patterns/_index.scss" },
-    "./selectors.js":    "./selectors.js",
-    "./ready.js":        "./ready.js",
-    "./global.js":       "./global.js",
-    "./relocate.js":     "./relocate.js",
-    "./disclosure.js":   "./disclosure.js",
-    "./subnav.js":       "./subnav.js",
+    ".": {
+      "sass": "./_index.scss"
+    },
+    "./patterns": {
+      "sass": "./patterns/_index.scss"
+    },
+    "./patterns.scss": {
+      "sass": "./patterns/_index.scss"
+    },
+    "./selectors.js": "./selectors.js",
+    "./ready.js": "./ready.js",
+    "./global.js": "./global.js",
+    "./relocate.js": "./relocate.js",
+    "./disclosure.js": "./disclosure.js",
+    "./subnav.js": "./subnav.js",
     "./_selectors.scss": "./_selectors.scss",
-    "./_layout.scss":    "./_layout.scss"
+    "./_layout.scss": "./_layout.scss"
   },
   "files": [
     "_index.scss",
@@ -35,7 +48,7 @@
   ],
   "scripts": {
     "build:selectors": "node scripts/generate-selectors-js.mjs",
-    "prepublishOnly":  "npm run build:selectors"
+    "prepublishOnly": "npm run build:selectors"
   },
   "license": "MIT",
   "keywords": [

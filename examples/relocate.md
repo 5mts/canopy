@@ -47,6 +47,6 @@ Options: `$fallback-delay: 5s`, `$duration: 0.4s`, and `$shift: -0.5rem`.
 These control the fallback reveal's delay, duration, and vertical movement.
 Reduced-motion settings remove the animation, but keep the delayed reveal.
 
-Moved elements get `data-fm-relocated`; destinations get the `fm-relocated`
+Moved elements get `data-canopy-relocated`; destinations get the `canopy-relocated`
 class. The SCSS uses the attribute to reveal each element after it moves,
 including new content loaded during navigation.

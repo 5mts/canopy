@@ -1,4 +1,4 @@
-// Hide an element until relocate.js moves it and adds data-fm-relocated.
+// Hide an element until relocate.js moves it and adds data-canopy-relocated.
 // Include inside the element's rule:
 //
 //   @include grove-selector('podcast-subscribe') {
@@ -19,7 +19,7 @@ $-flash-guard-keyframes-emitted: false;
   transform: translateY($shift);
   // Allow the height to animate from 0 to auto.
   interpolate-size: allow-keywords;
-  animation: fm-relocate-reveal $duration $delay forwards;
+  animation: canopy-relocate-reveal $duration $delay forwards;
 
   @media (prefers-reduced-motion: reduce) {
     transform: none;
@@ -32,7 +32,7 @@ $-flash-guard-keyframes-emitted: false;
   @if not $-flash-guard-keyframes-emitted {
     $-flash-guard-keyframes-emitted: true !global;
     @at-root {
-      @keyframes fm-relocate-reveal {
+      @keyframes canopy-relocate-reveal {
         to {
           height: auto;
           opacity: 1;
@@ -43,11 +43,11 @@ $-flash-guard-keyframes-emitted: false;
   }
 
   @if $dest {
-    body:has(#{$dest}) &:not([data-fm-relocated]) {
+    body:has(#{$dest}) &:not([data-canopy-relocated]) {
       @include -flash-guard-hidden($duration, $fallback-delay, $shift);
     }
   } @else {
-    &:not([data-fm-relocated]) {
+    &:not([data-canopy-relocated]) {
       @include -flash-guard-hidden($duration, $fallback-delay, $shift);
     }
   }

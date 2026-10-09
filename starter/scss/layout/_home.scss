@@ -1,0 +1,6 @@
+// Plain Grove class, so no canopy name needed. Only the home page has it.
+@use '../tokens' as *;
+
+.HomePage-main {
+  background-color: $color-surface;
+}

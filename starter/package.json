@@ -1,0 +1,16 @@
+{
+  "name": "my-grove-theme",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "sass --pkg-importer=node scss/main.scss dist/theme.css --style=compressed --no-source-map",
+    "dev":   "sass --pkg-importer=node scss/main.scss dist/theme.css --watch --style=expanded --no-source-map & serve dist --cors -l 3000"
+  },
+  "dependencies": {
+    "@5mts/canopy": "^0.3.0"
+  },
+  "devDependencies": {
+    "sass": "^1.78.0",
+    "serve": "^14.2.0"
+  }
+}

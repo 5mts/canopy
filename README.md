@@ -4,6 +4,7 @@ Canopy helps you change the layout, styles, and menus on NPR Grove sites.
 
 - **Pasting JavaScript into the CMS?** Start with [inline snippets](examples/inline-snippets.md), including site setup.
 - **Editing theme files?** Install below. The style examples use Sass (`.scss`), which your theme builds into CSS.
+- **Starting a new theme?** Copy the [starter theme](starter/).
 
 Published by Five Mountains. Unaffiliated with Grove vendors.
 
@@ -42,12 +43,14 @@ aside {
 ### Style pages by program, section, or tag
 
 ```scss
-#{grove-page-is('program', 'The Broadside')} .Page-header {
-  background: teal;
+#{grove-page-is('program', 'Morning Show')} {
+  @include grove-selector('nav-bar') {
+    background: teal;
+  }
 }
 ```
 
-Use `program`, `category` (Grove Section), `keywords` (Grove Tags), `pageType`, or `series`. Values must match the page's metadata. Pass a list to match any listed value: `grove-page-is('program', ('The Broadside', 'WUNC Politics'))`.
+Use `program`, `category` (Grove Section), `keywords` (Grove Tags), `pageType`, or `series`. Values must match the page's metadata. Pass a list to match any listed value: `grove-page-is('program', ('Morning Show', 'Weekend Talk'))`.
 
 ### Change a layout
 

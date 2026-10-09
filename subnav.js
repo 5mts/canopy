@@ -1,5 +1,5 @@
 // Label a menu for screen readers and mark the current page's link with
-// aria-current="page" and the fm-current class (or your chosen currentClass).
+// aria-current="page" and the canopy-current class (or your chosen currentClass).
 // Returns the matching link, or null. Use it to label a menu button:
 //
 //   const current = subnav(container, { label: 'Section' });
@@ -16,7 +16,7 @@ function normalizePath(pathname) {
 export function subnav(container, options = {}) {
   const {
     label = "Menu",              // menu name for screen readers
-    currentClass = "fm-current",
+    currentClass = "canopy-current",
   } = options;
 
   const isList = container.matches("ul, ol"); // preserve the list's role

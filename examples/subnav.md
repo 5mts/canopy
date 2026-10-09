@@ -62,7 +62,7 @@ Change the width, colors, and spacing for your site. More options:
 ## Current-page and accessibility details
 
 - Matching links get `aria-current="page"` and `currentClass` (default:
-  `fm-current`). Links must be on the same site. Matching ignores query
+  `canopy-current`). Links must be on the same site. Matching ignores query
   strings, hashes, and trailing slashes.
 - `subnav()` returns the first matching link, or `null`.
 - It adds a navigation role and label where needed, and preserves an

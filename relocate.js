@@ -4,9 +4,9 @@
 // Both values are CSS selectors; use grove('key') for a mapped Grove selector.
 //
 // SCSS uses these names; keep them in sync:
-//   data-fm-relocated marks moved elements so they move only once.
-//   fm-relocated marks a destination that received elements.
-// CSS can hide elements until data-fm-relocated is set to prevent a flash.
+//   data-canopy-relocated marks moved elements so they move only once.
+//   canopy-relocated marks a destination that received elements.
+// CSS can hide elements until data-canopy-relocated is set to prevent a flash.
 
 import { onGroveRender } from "./ready.js";
 
@@ -28,11 +28,11 @@ function applyAll() {
     if (!destEl) continue;
     let moved = false;
     for (const node of document.querySelectorAll(source)) {
-      if (node.dataset.fmRelocated) continue;
-      node.dataset.fmRelocated = "true";
+      if (node.dataset.canopyRelocated) continue;
+      node.dataset.canopyRelocated = "true";
       destEl.insertAdjacentElement(position, node);
       moved = true;
     }
-    if (moved) destEl.classList.add("fm-relocated");
+    if (moved) destEl.classList.add("canopy-relocated");
   }
 }

@@ -9,7 +9,7 @@
 //
 // panel can be a selector within the container or an element. If a selector
 // finds nothing, return null. Otherwise return the button.
-// Optional: toggleClass sets its class (default: fm-disclosure-toggle).
+// Optional: toggleClass sets its class (default: canopy-disclosure-toggle).
 // Set closeOnOutsideClick or closeOnEscape to true when creating the button
 // to enable either. Both default to false. Escape also focuses the button.
 
@@ -34,7 +34,7 @@ function handleOutsideClick(event) {
 export function disclosure(container, options = {}) {
   const {
     label,
-    toggleClass = "fm-disclosure-toggle",
+    toggleClass = "canopy-disclosure-toggle",
     panel,
     closeOnOutsideClick = false,
     closeOnEscape = false,
@@ -56,7 +56,7 @@ export function disclosure(container, options = {}) {
     button.className = toggleClass;
     button.setAttribute("aria-expanded", "false");
     if (panelEl) {
-      if (!panelEl.id) panelEl.id = `fm-disclosure-${++uid}`;
+      if (!panelEl.id) panelEl.id = `canopy-disclosure-${++uid}`;
       button.setAttribute("aria-controls", panelEl.id);
     }
     button.addEventListener("click", () => {

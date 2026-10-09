@@ -1,6 +1,6 @@
 # Grove starter theme
 
-A minimal theme built on [canopy](../README.md). It makes two changes you can
+A minimal theme built on [canopy](https://github.com/5mts/canopy#readme). It makes two changes you can
 see right away:
 
 - The audio player sits at the bottom of the screen ([canopy pattern](scss/components/_audio-player.scss)).
@@ -37,5 +37,5 @@ When you're ready to publish, `npm run build` writes a minified
   [scss/main.scss](scss/main.scss).
 - Write simple Grove classes such as `.HomePage-main` directly. Use canopy names
   for selectors that are hard to write by hand. The
-  [canopy README](../README.md) has the list, more patterns, and JavaScript
+  [canopy README](https://github.com/5mts/canopy#readme) has the list, more patterns, and JavaScript
   helpers.

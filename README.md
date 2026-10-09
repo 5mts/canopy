@@ -8,11 +8,24 @@ We encourage questions, issues, and submissions — and if you need support with
 
 ## Quick start
 
-1. Copy the `starter` folder to a directory outside the project
-2. Navigate into the starter example: `cd starter`
-3. Run `npm install`
-4. Run `npm run dev`
-5. Inject the script locally into the header of your site to test, using something like local overrides for your browser or our (Local Script Testing)[https://chromewebstore.google.com/detail/local-script-testing/jmgdaokiiafjphaomnmecgeldnpddebe] Chromium browser extension
+Download the starter into a new theme directory, install its dependencies, and start the local development server:
+
+```bash
+npx degit 5mts/canopy/starter my-grove-theme
+cd my-grove-theme
+npm install
+npm run dev
+```
+
+The starter pins the audio player to the bottom of the screen and gives the home page a cream background. It rebuilds your CSS when you save changes.
+
+To preview it on your site, add this stylesheet link to the page `<head>` using your browser's local overrides or our [Local Script Testing](https://chromewebstore.google.com/detail/local-script-testing/jmgdaokiiafjphaomnmecgeldnpddebe) extension for Chromium browsers:
+
+```html
+<link rel="stylesheet" href="http://localhost:3000/dist/theme.css">
+```
+
+See the [starter instructions](https://github.com/5mts/canopy/tree/main/starter#readme) for customization and production builds.
 
 
 ## Install in a theme

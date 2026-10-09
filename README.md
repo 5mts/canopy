@@ -1,12 +1,19 @@
-# @5mts/canopy
+# Canopy: A Grove styling & design toolkit
 
-Canopy helps you change the layout, styles, and menus on NPR Grove sites.
+A library to assist in custom designs for sites using the NPR Grove CMS. 
 
-- **Pasting JavaScript into the CMS?** Start with [inline snippets](examples/inline-snippets.md), including site setup.
-- **Editing theme files?** Install below. The style examples use Sass (`.scss`), which your theme builds into CSS.
-- **Starting a new theme?** Copy the [starter theme](starter/).
+**This project is not affiliated with NPR, Grove, Brightspot, or other vendors.** This is a completely independent project of [Five Mountains](https://5mts.com), an private, independent consultancy supporting public media and local news. While we will try to keep this library updated as a community resource, this project is provided purely "as is" and we can't guarantee it will work or continue working for your needs. 
 
-Published by Five Mountains. Unaffiliated with Grove vendors.
+We encourage questions, issues, and submissions — and if you need support with Grove or other digital projects, we take a limited number of paid projects each year (which help support work on this and other community projects). 
+
+## Quick start
+
+1. Copy the `starter` folder to a directory outside the project
+2. Navigate into the starter example: `cd starter`
+3. Run `npm run install`
+4. Run `npm run dev`
+5. Inject the script locally into the header of your site to test, using something like local overrides for your browser or our (Local Script Testing)[https://chromewebstore.google.com/detail/local-script-testing/jmgdaokiiafjphaomnmecgeldnpddebe] Chromium browser extension
+
 
 ## Install in a theme
 
@@ -43,14 +50,12 @@ aside {
 ### Style pages by program, section, or tag
 
 ```scss
-#{grove-page-is('program', 'Morning Show')} {
-  @include grove-selector('nav-bar') {
-    background: teal;
-  }
+#{grove-page-is('program', 'The Broadside')} .Page-header {
+  background: teal;
 }
 ```
 
-Use `program`, `category` (Grove Section), `keywords` (Grove Tags), `pageType`, or `series`. Values must match the page's metadata. Pass a list to match any listed value: `grove-page-is('program', ('Morning Show', 'Weekend Talk'))`.
+Use `program`, `category` (Grove Section), `keywords` (Grove Tags), `pageType`, or `series`. Values must match the page's metadata. Pass a list to match any listed value: `grove-page-is('program', ('The Broadside', 'WUNC Politics'))`.
 
 ### Change a layout
 

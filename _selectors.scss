@@ -225,7 +225,7 @@ $grove-selectors: $grove-selectors-base;
 }
 
 // Limit styles to pages with a matching value. A list matches any listed value.
-//   #{grove-page-is('program', 'The Broadside')} { .my-heading { color: navy; } }
+//   #{grove-page-is('program', 'Morning Show')} { .my-heading { color: navy; } }
 @function grove-page-is($key, $values) {
   $matches: ();
   @each $value in $values {
